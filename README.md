@@ -1,4 +1,4 @@
-# Compagnon-Mythic-GME
+# Compagnon Mythic GME
 
 Un petit outil codé en un après midi pour m'assister dans l'utilisation du Mythic Game Master Emulator
 
