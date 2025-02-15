@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Compagnon Mythic GME</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; padding-top: 20px; }
+        .container { max-width: 1100px; }
+        .delete-btn { color: red; text-decoration: none; }
+        .delete-btn:hover { text-decoration: underline; }
+        .highlight { background-color: #d1e7dd; padding: 10px; border-radius: 5px; }
+        .collapsible-content { display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center mb-2">Compagnon Mythic GME</h1>
+    <!-- Bandeau rappelant le facteur de chaos et la scène actuelle -->
+    <div class="alert alert-secondary text-center">
+        <strong>Facteur Chaos actuel :</strong> {{ chaos_factor }} &nbsp; | &nbsp;
+        <strong>Scène actuelle :</strong> {% if current_scene %} {{ current_scene.title }} [{{ current_scene.status }}] {% else %} Aucune scène {% endif %}
+    </div>
+    <!-- Onglets Bootstrap -->
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="fate-tab" data-bs-toggle="tab" data-bs-target="#fate" type="button" role="tab">
+                Questions du Destin & Facteur Chaos
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="objectives-tab" data-bs-toggle="tab" data-bs-target="#objectives" type="button" role="tab">
+                Objectifs
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="npcs-tab" data-bs-toggle="tab" data-bs-target="#npcs" type="button" role="tab">
+                PNJs
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="scenes-tab" data-bs-toggle="tab" data-bs-target="#scenes" type="button" role="tab">
+                Scènes & Chaos Roll
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="tables-tab" data-bs-toggle="tab" data-bs-target="#tables" type="button" role="tab">
+                Tables Aléatoires
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="d100-tab" data-bs-toggle="tab" data-bs-target="#d100" type="button" role="tab">
+                Lanceur de d100
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="journal-tab" data-bs-toggle="tab" data-bs-target="#journal" type="button" role="tab">
+                Journal
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content mt-3" id="mainTabContent">
+        <!-- Onglet Questions du Destin & Facteur Chaos -->
+        <div class="tab-pane fade show active" id="fate" role="tabpanel" aria-labelledby="fate-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4>Facteur de Chaos : <span class="badge bg-warning text-dark">{{ chaos_factor }}</span></h4>
+                    <form action="/adjust_chaos" method="post" class="d-flex">
+                        <button type="submit" name="adjustment" value="1" class="btn btn-success me-2">+1</button>
+                        <button type="submit" name="adjustment" value="-1" class="btn btn-danger">-1</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Formulaire Questions du Destin -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Poser une Question du Destin</h2>
+                    <form action="/ask_fate" method="post">
+                        <div class="mb-3">
+                            <input type="text" name="question" class="form-control" placeholder="Votre question" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sélectionnez les probabilités :</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds1" value="Certain" checked>
+                                <label class="form-check-label" for="odds1">Certain (90%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds2" value="Presque Certain">
+                                <label class="form-check-label" for="odds2">Presque Certain (85%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds3" value="Très Probable">
+                                <label class="form-check-label" for="odds3">Très Probable (75%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds4" value="Probable">
+                                <label class="form-check-label" for="odds4">Probable (65%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds5" value="50/50">
+                                <label class="form-check-label" for="odds5">50/50 (50%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds6" value="Improbable">
+                                <label class="form-check-label" for="odds6">Improbable (35%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds7" value="Très Improbable">
+                                <label class="form-check-label" for="odds7">Très Improbable (25%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds8" value="Presque Impossible">
+                                <label class="form-check-label" for="odds8">Presque Impossible (15%)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="odds" id="odds9" value="Impossible">
+                                <label class="form-check-label" for="odds9">Impossible (10%)</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Poser la question</button>
+                    </form>
+                </div>
+            </div>
+            {% if last_fq %}
+            <div class="card mb-3 highlight">
+                <div class="card-body">
+                    <h4>Dernière question posée</h4>
+                    <p>
+                        <strong>Q :</strong> {{ last_fq.question }}<br>
+                        <strong>Probabilités :</strong> {{ last_fq.odds }}<br>
+                        <strong>Résultat :</strong> {{ last_fq.answer }}
+                        {% if last_fq.random_event %}
+                            <span class="badge bg-danger">Événement aléatoire déclenché !</span>
+                        {% endif %}
+                    </p>
+                    <small>
+                        Seuil de Oui : {{ last_fq.final_chance }}%,
+                        Oui Exceptionnel ≤ {{ last_fq.exc_yes_threshold }},
+                        Non Exceptionnel ≥ {{ last_fq.exc_no_threshold }},
+                        (Jet : {{ last_fq.roll }})
+                    </small>
+                </div>
+            </div>
+            {% endif %}
+            <!-- Affichage des Questions du Destin paginées -->
+            <div class="card">
+                <div class="card-body">
+                    <h2>Historique des Questions du Destin</h2>
+                    <ul class="list-group">
+                        {% for fq in fate_questions.items %}
+                        <li class="list-group-item">
+                            <strong>Q :</strong> {{ fq.question }} <br>
+                            <strong>Probabilités :</strong> {{ fq.odds }} | <strong>Réponse :</strong> {{ fq.answer }} <br>
+                            <small>
+                                Seuil de Oui : {{ fq.final_chance }}%,
+                                Oui Exceptionnel ≤ {{ fq.exc_yes_threshold }},
+                                Non Exceptionnel ≥ {{ fq.exc_no_threshold }},
+                                (Jet : {{ fq.roll }})
+                            </small>
+                            <a href="{{ url_for('delete_fate', question_id=fq.id) }}" class="float-end delete-btn">Supprimer</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3 text-center">
+                {% if fate_questions.pages > 1 %}
+                    {% if fate_questions.has_prev %}
+                        <a href="{{ url_for('index', fate_page=fate_questions.prev_num) }}#fate" class="btn btn-secondary">⬅️ Précédent</a>
+                    {% endif %}
+                    <span class="mx-3">Page {{ current_fate_page }} / {{ fate_questions.pages }}</span>
+                    {% if fate_questions.has_next %}
+                        <a href="{{ url_for('index', fate_page=fate_questions.next_num) }}#fate" class="btn btn-secondary">Suivant ➡️</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Onglet Objectifs -->
+        <div class="tab-pane fade" id="objectives" role="tabpanel" aria-labelledby="objectives-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Ajouter un Objectif</h2>
+                    <form action="/add_objective" method="post">
+                        <div class="input-group">
+                            <input type="text" name="description" class="form-control" placeholder="Nouvel objectif" required>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2>Liste des Objectifs</h2>
+                    <ul class="list-group">
+                        {% for obj in objectives %}
+                        <li class="list-group-item">
+                            {{ obj.description }}
+                            <a href="{{ url_for('delete_objective', objective_id=obj.id) }}" class="float-end delete-btn">Supprimer</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet PNJs -->
+        <div class="tab-pane fade" id="npcs" role="tabpanel" aria-labelledby="npcs-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Ajouter un PNJ</h2>
+                    <form action="/add_npc" method="post">
+                        <div class="mb-3">
+                            <input type="text" name="name" class="form-control" placeholder="Nom du PNJ" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="description" class="form-control" placeholder="Description">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Liste des PNJs</h2>
+                    <ul class="list-group">
+                        {% for npc in npcs %}
+                        <li class="list-group-item">
+                            <strong>{{ npc.name }}</strong> : {{ npc.description }}
+                            <a href="{{ url_for('delete_npc', npc_id=npc.id) }}" class="float-end delete-btn">Supprimer</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2>Tirage d'un PNJ aléatoire</h2>
+                    <button id="randomNpcBtn" class="btn btn-secondary">Tirer un PNJ</button>
+                    <p id="randomNpcResult" class="mt-2"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Scènes & Chaos Roll -->
+        <div class="tab-pane fade" id="scenes" role="tabpanel" aria-labelledby="scenes-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Ajouter une Scène</h2>
+                    <form action="/add_scene" method="post">
+                        <div class="mb-3">
+                            <input type="text" name="title" class="form-control" placeholder="Titre de la scène" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea name="description" class="form-control" placeholder="Description de la scène"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Statut initial :</label>
+                            <select name="status" class="form-select">
+                                <option value="normale" selected>Normale</option>
+                                <option value="altérée">Altérée</option>
+                                <option value="interrompue">Interrompue</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter la scène</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Bouton Chaos Roll pour la scène suivante -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Chaos Roll pour la scène suivante</h2>
+                    <button id="sceneChaosRollBtn" class="btn btn-secondary">Lancer le Chaos Roll</button>
+                    <p id="sceneChaosRollResult" class="mt-2"></p>
+                    <small>
+                        Règle : sur un d10 – si le résultat > CF : scène normale ; si ≤ CF et impair : scène altérée ; si ≤ CF et pair : scène interrompue.
+                    </small>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h2>Liste des Scènes</h2>
+                    <ul class="list-group">
+                        {% for scene in scenes %}
+                        <li class="list-group-item">
+                            <strong>{{ scene.title }}</strong> [{{ scene.status }}] : {{ scene.description }}
+                            <a href="{{ url_for('delete_scene', scene_id=scene.id) }}" class="float-end delete-btn">Supprimer</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Tables Aléatoires -->
+        <div class="tab-pane fade" id="tables" role="tabpanel" aria-labelledby="tables-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="text-center">Tables Aléatoires</h2>
+
+                    <!-- Tabs pour séparer les catégories -->
+                    <ul class="nav nav-pills mb-3 justify-content-center" id="tablesTab" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="mythic-tables-tab" data-bs-toggle="tab" data-bs-target="#mythic-tables" type="button" role="tab">
+                                📜 Tables Mythic GME
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="custom-tables-tab" data-bs-toggle="tab" data-bs-target="#custom-tables" type="button" role="tab">
+                                ✨ Tables Personnelles
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Tables du Mythic GME -->
+                        <div class="tab-pane fade show active" id="mythic-tables" role="tabpanel">
+                            <h4 class="text-center">📜 Tables Officielles</h4>
+                            <h4 class="text-center">Généraux</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('scene_adjustment')">Ajustement de Scène</button>
+                                        <p id="sceneAdjustmentResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('random_event_focus')">Focus d'Événement Aléatoire</button>
+                                    
+                                        <p id="randomEventFocusResult"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <h4 class="text-center">Tables de Sens</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('meaning_actions')">Actions</button>
+                                        <p id="meaningActionsResult"></p>
+                                        
+                                        <button class="btn btn-primary" onclick="rollTable('meaning_descriptors')">Descripteurs</button>
+                                        <p id="meaningDescriptorsResult"></p>
+                                        
+                                        <button class="btn btn-primary" onclick="rollTable('character_elements')">Caractèristique Personnages</button>
+                                        <p id="meaningcharacterResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('object_elements')">Objets</button>
+                                        <p id="object_elementsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_CRÉATURE')">Descripteurs Créature</button>
+                                        <p id="descripteursCreatureResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('MESSAGE_CRYPTIQUE')">Message Cryptique</button>
+                                        <p id="messageCryptiqueResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('MALEDICTIONS')">Malédictions</button>
+                                        <p id="maledictionsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_DOMICILE')">Descripteurs Domicile</button>
+                                        <p id="descripteursDomicileResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_DONJON')">Descripteurs Donjon</button>
+                                        <p id="descripteursDonjonResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('PIÈGES_DONJON')">Pièges Donjon</button>
+                                        <p id="piegesDonjonResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_FORÊT')">Descripteurs Forêt</button>
+                                        <p id="descripteursForetResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DIEUX')">Dieux</button>
+                                        <p id="dieuxResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('LÉGENDES')">Légendes</button>
+                                        <p id="legendesResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('EMPLACEMENTS')">Emplacements</button>
+                                        <p id="emplacementsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_OBJET_MAGIQUE')">Descripteurs Objet Magique</button>
+                                        <p id="descripteursObjetMagiqueResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_MUTATION')">Descripteurs Mutation</button>
+                                        <p id="descripteursMutationResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('NOMS')">Noms</button>
+                                        <p id="nomsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('MAISON_NOBLE')">Maison Noble</button>
+                                        <p id="maisonNobleResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('OBJETS')">Objets</button>
+                                        <p id="objetsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('REBONDISSEMENTS')">Rebondissements</button>
+                                        <p id="rebondissementsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('POUVOIRS')">Pouvoirs</button>
+                                        <p id="pouvoirsResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('RÉSULTATS_FOUILLE')">Résultats Fouille</button>
+                                        <p id="resultatsFouilleResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('ODEURS')">Odeurs</button>
+                                        <p id="odeursResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('SONS')">Sons</button>
+                                        <p id="sonsResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('EFFETS_SORTS')">Effets Sorts</button>
+                                        <p id="effetsSortsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_VAISSEAU')">Descripteurs Vaisseau</button>
+                                        <p id="descripteursVaisseauResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_TERRAIN')">Descripteurs Terrain</button>
+                                        <p id="descripteursTerrainResult"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_MORTS_VIVANTS')">Descripteurs Morts-Vivants</button>
+                                        <p id="descripteursMortsVivantsResult"></p>
+
+                                        <button class="btn btn-primary" onclick="rollTable('VISIONS_RÊVES')">Visions Rêves</button>
+                                        <p id="visionsRevesResult"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tables Personnelles -->
+                        <div class="tab-pane fade" id="custom-tables" role="tabpanel">
+                            <h4 class="text-center">✨ Tables Personnelles</h4>
+                            <!-- Liste des tables personnalisées sauvegardées -->
+                            <div id="customTablesContainer" class="mt-3">
+                                {% if custom_tables|length == 0 %}
+                                <p class="text-muted text-center">Aucune table ajoutée pour le moment.</p>
+                                {% else %}
+                                {% for table in custom_tables %}
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <h5>{{ table.name }}</h5>
+                                        <pre class="collapsible-content" id="tableContent-{{ table.id }}">{{ table.values }}</pre>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="toggleTableContent('{{ table.id }}')">
+                                            <span class="d-inline-block text-truncate" style="max-width: 100px;">Voir le contenu</span>
+                                        </button>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-secondary btn-sm me-2" onclick="rollCustomTable('{{ table.id }}')">Lancer</button>
+                                            <button class="btn btn-warning btn-sm me-2" onclick="openEditModal('{{ table.id }}')">Éditer</button>
+                                            <a href="{{ url_for('delete_custom_table', table_id=table.id) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                                        </div>
+                                        <!-- Ajout d’un conteneur pour afficher le résultat -->
+                                        <p id="customTableResult-{{ table.id }}" class="mt-2 text-center fw-bold"></p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Formulaire d'ajout -->
+                            <div class="mt-4">
+                                <h5>➕ Ajouter une Table Personnelle</h5>
+                                <form action="/add_custom_table" method="post">
+                                    <div class="mb-2">
+                                        <input type="text" name="customTableName" id="customTableName" class="form-control" placeholder="Nom de la table" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <textarea name="customTableValues" id="customTableValues" class="form-control" rows="3" placeholder="Liste des valeurs, une par ligne" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Ajouter</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fenêtre d'édition de table personnelle -->
+        <div class="modal fade" id="editCustomTableModal" tabindex="-1" aria-labelledby="editCustomTableModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <form action="" method="post" id="editCustomTableForm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editCustomTableModalLabel">Éditer la Table Personnelle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="mb-2">
+                          <label for="customTableNameEdit" class="form-label">Nom de la table</label>
+                          <input type="text" name="customTableNameEdit" id="customTableNameEdit" class="form-control" required>
+                      </div>
+                      <div class="mb-2">
+                          <label for="customTableValuesEdit" class="form-label">Valeurs de la table (une par ligne)</label>
+                          <textarea name="customTableValuesEdit" id="customTableValuesEdit" class="form-control" rows="5" required></textarea>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+        </div>
+
+        <!-- Onglet Journal -->
+        <div class="tab-pane fade" id="journal" role="tabpanel" aria-labelledby="journal-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="text-center">📖 Journal</h2>
+
+                    <!-- Formulaire pour ajouter une entrée -->
+                    <form action="/add_journal_entry" method="post">
+                        <div class="mb-2">
+                            <textarea name="content" class="form-control" rows="3" placeholder="Écris une nouvelle entrée..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Affichage des entrées -->
+            <div class="card">
+                <div class="card-body">
+                    <h4>📝 Entrées récentes</h4>
+                    {% if journal_entries.items %}
+                        <ul class="list-group">
+                            {% for entry in journal_entries.items %}
+                            <li class="list-group-item">
+                                <small class="text-muted">{{ entry.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                <p>{{ entry.content }}</p>
+                                <a href="{{ url_for('delete_journal_entry', entry_id=entry.id) }}" class="text-danger float-end">Supprimer</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center">Aucune entrée pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3 text-center">
+                {% if journal_entries.pages > 1 %}
+                    {% if journal_entries.has_prev %}
+                        <a href="{{ url_for('journal', page=journal_entries.prev_num) }}" class="btn btn-secondary">⬅️ Précédent</a>
+                    {% endif %}
+                    <span class="mx-3">Page {{ current_page }} / {{ journal_entries.pages }}</span>
+                    {% if journal_entries.has_next %}
+                        <a href="{{ url_for('journal', page=journal_entries.next_num) }}" class="btn btn-secondary">Suivant ➡️</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Bouton d'export -->
+            <div class="mt-4 text-center">
+                <a href="{{ url_for('export_journal') }}" class="btn btn-success">📥 Exporter en Markdown</a>
+            </div>
+        </div>
+
+          
+<script>
+    // Charger toutes les tables dans une variable JavaScript pour éviter les erreurs de saut de ligne
+    let customTables = {{ custom_tables_json|safe }};
+
+    // Fonction pour tirer dans une table personnelle sauvegardée
+    function rollCustomTable(tableId) {
+        // On envoie une requête vers un endpoint qui n'est pas encore défini côté serveur
+        // Pour simplifier, nous récupérons les valeurs depuis un objet JavaScript construit à partir des tables sauvegardées.
+        // Ici, nous allons utiliser une requête AJAX pour obtenir les valeurs de la table.
+        fetch("/get_custom_table?table_id=" + parseInt(tableId, 10))
+        .then(response => response.json())
+        .then(data => {
+        if (data.error) {
+            document.getElementById("customTableResult-" + tableId).innerText = "Erreur : " + data.error;
+        } else {
+            const values = data.values.split("\n").filter(v => v.trim() !== "");
+            if (values.length > 0) {
+                const roll = Math.floor(Math.random() * values.length);
+                document.getElementById("customTableResult-" + tableId).innerText = "🎲 Résultat : " + values[roll];
+            } else {
+                document.getElementById("customTableResult-" + tableId).innerText = "⚠️ La table est vide.";
+            }
+        }
+    });
+}
+
+    // Pour éditer une table personnalisée, on ouvre le modal et on remplit les champs
+    function openEditModal(tableId) {
+        console.log(tableId);
+        console.log(customTables);
+    const table = customTables.find(t => t.id === parseInt(tableId, 10));
+    console.log(table);
+    console.log('edit');
+    if (table) {
+        console.log('edittable');
+        document.getElementById("editCustomTableForm").action = "/edit_custom_table/" + table.id;
+        document.getElementById("customTableNameEdit").value = table.name;
+        document.getElementById("customTableValuesEdit").value = table.values.replace(/\\n/g, "\n"); // Rétablir les sauts de ligne
+        const modal = new bootstrap.Modal(document.getElementById("editCustomTableModal"));
+        modal.show();
+    }
+}
+
+    // Fonction pour afficher/masquer le contenu d'une table
+    function toggleTableContent(tableId) {
+        const content = document.getElementById("tableContent-" + tableId);
+        if (content.style.display === "none" || content.style.display === "") {
+            content.style.display = "block";
+        } else {
+            content.style.display = "none";
+        }
+    }
+</script>
+
+        <!-- Onglet Lanceur de d100 -->
+        <div class="tab-pane fade" id="d100" role="tabpanel" aria-labelledby="d100-tab">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Lanceur de d100</h2>
+                    <button id="rollD100Btn" class="btn btn-primary">Lancer 1d100</button>
+                    <p id="d100Result" class="mt-2"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS et scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const activeTab = localStorage.getItem('activeTab');
+        if(activeTab){
+            const tabTrigger = document.querySelector(activeTab);
+            if(tabTrigger){
+                new bootstrap.Tab(tabTrigger).show();
+            }
+        }
+    });
+
+    let triggerTabs = document.querySelectorAll('#mainTab button');
+    triggerTabs.forEach(tab => {
+        tab.addEventListener('shown.bs.tab', function (event) {
+            localStorage.setItem('activeTab', '#' + event.target.id);
+        });
+    });
+
+    // Tirage d'un PNJ aléatoire
+    document.getElementById("randomNpcBtn")?.addEventListener("click", function(){
+        fetch("/random_npc")
+        .then(response => response.json())
+        .then(data => {
+            if(data.error) {
+                document.getElementById("randomNpcResult").innerText = data.error;
+            } else {
+                document.getElementById("randomNpcResult").innerText = data.name + " : " + data.description;
+            }
+        });
+    });
+
+    // Lanceur de d100
+    document.getElementById("rollD100Btn")?.addEventListener("click", function(){
+        fetch("/roll_d100")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("d100Result").innerText = "Résultat du d100 : " + data.roll;
+        });
+    });
+
+    // Chaos Roll pour la scène suivante
+    document.getElementById("sceneChaosRollBtn")?.addEventListener("click", function(){
+        fetch("/scene_chaos_roll")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("sceneChaosRollResult").innerText = "Jet : " + data.roll + " → Scène " + data.status;
+        });
+    });
+
+    // Tirage dans les tables aléatoires
+    function rollTable(tableName) {
+        fetch("/roll_table?table=" + tableName)
+        .then(response => response.json())
+        .then(data => {
+            if(tableName === "random_event_focus"){
+                document.getElementById("randomEventFocusResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "meaning_actions"){
+                document.getElementById("meaningActionsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "meaning_descriptors"){
+                document.getElementById("meaningDescriptorsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "character_elements"){
+                document.getElementById("meaningcharacterResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "object_elements"){
+                document.getElementById("object_elementsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_CRÉATURE"){
+                document.getElementById("descripteursCreatureResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "MESSAGE_CRYPTIQUE"){
+                document.getElementById("messageCryptiqueResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "MALEDICTIONS"){
+                document.getElementById("maledictionsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_DOMICILE"){
+                document.getElementById("descripteursDomicileResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_DONJON"){
+                document.getElementById("descripteursDonjonResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "PIÈGES_DONJON"){
+                document.getElementById("piegesDonjonResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_FORÊT"){
+                document.getElementById("descripteursForetResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DIEUX"){
+                document.getElementById("dieuxResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "LÉGENDES"){
+                document.getElementById("legendesResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "EMPLACEMENTS"){
+                document.getElementById("emplacementsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_OBJET_MAGIQUE"){
+                document.getElementById("descripteursObjetMagiqueResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_MUTATION"){
+                document.getElementById("descripteursMutationResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "NOMS"){
+                document.getElementById("nomsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "MAISON_NOBLE"){
+                document.getElementById("maisonNobleResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "OBJETS"){
+                document.getElementById("objetsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "REBONDISSEMENTS"){
+                document.getElementById("rebondissementsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "POUVOIRS"){
+                document.getElementById("pouvoirsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "RÉSULTATS_FOUILLE"){
+                document.getElementById("resultatsFouilleResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "ODEURS"){
+                document.getElementById("odeursResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "SONS"){
+                document.getElementById("sonsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "EFFETS_SORTS"){
+                document.getElementById("effetsSortsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_VAISSEAU"){
+                document.getElementById("descripteursVaisseauResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_TERRAIN"){
+                document.getElementById("descripteursTerrainResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "DESCRIPTEURS_MORTS_VIVANTS"){
+                document.getElementById("descripteursMortsVivantsResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "VISIONS_RÊVES"){
+                document.getElementById("visionsRevesResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            } else if(tableName === "scene_adjustment"){
+                document.getElementById("sceneAdjustmentResult").innerText = "Jet : " + data.roll + " → " + data.result;
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
