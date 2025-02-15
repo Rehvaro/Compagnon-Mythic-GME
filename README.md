@@ -17,7 +17,7 @@ Pour l'utiliser :
 
 Installer python 3, puis les packages suivants :
 ```bash
-pip install flask flask-sqlalchemy flask-wtf
+python3 -m pip install flask flask-sqlalchemy flask-wtf
 ```
 puis simplement lancer le script :
 ```bash
