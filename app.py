@@ -66,6 +66,18 @@ class InventoryItem(db.Model):
     description = db.Column(db.Text, nullable=True)
     inventory = db.relationship('Inventory', backref=db.backref('items', lazy=True, cascade="all, delete"))
 
+class PlayerCharacter(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)  # Nom du personnage
+    description = db.Column(db.Text, nullable=True)   # Petite description ou historique
+
+class PlayerAttribute(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    character_id = db.Column(db.Integer, db.ForeignKey('player_character.id'), nullable=False)
+    attribute_name = db.Column(db.String(200), nullable=False)  # Nom de l'attribut (ex : Force, PV, Mana, etc.)
+    attribute_value = db.Column(db.String(200), nullable=False) # Valeur de l'attribut (ex : 12, 50/100, etc.)
+    character = db.relationship('PlayerCharacter', backref=db.backref('attributes', lazy=True, cascade="all, delete"))
+
 
 with app.app_context():
     db.create_all()
@@ -141,6 +153,8 @@ def index():
 
     inventories = Inventory.query.all()
 
+    players = PlayerCharacter.query.all()
+
     return render_template("index.html", 
                        chaos_factor=game_state.chaos_factor, 
                        fate_questions=fate_questions, 
@@ -153,6 +167,7 @@ def index():
                        journal_entries=journal_entries,
                        current_fate_page=fate_page,
                        inventories=inventories,
+                       players=players,
                        custom_tables_json=json.dumps([{ "id": t.id, "name": t.name, "values": t.values } for t in custom_tables]))
 
 
@@ -1536,6 +1551,40 @@ def get_custom_table():
         return jsonify({"values": table.values})
     else:
         return jsonify({"error": "Table non trouvée"})
+
+@app.route("/add_player", methods=["POST"])
+def add_player():
+    name = request.form.get("name").strip()
+    description = request.form.get("description").strip()
+    if name:
+        new_player = PlayerCharacter(name=name, description=description)
+        db.session.add(new_player)
+        db.session.commit()
+    return redirect(url_for("index") + "#players")
+
+@app.route("/delete_player/<int:player_id>")
+def delete_player(player_id):
+    player = PlayerCharacter.query.get_or_404(player_id)
+    db.session.delete(player)
+    db.session.commit()
+    return redirect(url_for("index") + "#players")
+
+@app.route("/add_player_attribute/<int:player_id>", methods=["POST"])
+def add_player_attribute(player_id):
+    attr_name = request.form.get("attribute_name").strip()
+    attr_value = request.form.get("attribute_value").strip()
+    if attr_name and attr_value:
+        new_attr = PlayerAttribute(character_id=player_id, attribute_name=attr_name, attribute_value=attr_value)
+        db.session.add(new_attr)
+        db.session.commit()
+    return redirect(url_for("index") + "#players")
+
+@app.route("/delete_player_attribute/<int:attribute_id>")
+def delete_player_attribute(attribute_id):
+    attribute = PlayerAttribute.query.get_or_404(attribute_id)
+    db.session.delete(attribute)
+    db.session.commit()
+    return redirect(url_for("index") + "#players")
 
 
 if __name__ == "__main__":
