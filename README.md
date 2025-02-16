@@ -1,5 +1,7 @@
 # Compagnon Mythic GME
 
+EDIT : D'autres petites fonctions (PJ, Quantités dans les inventaires, etc) ont été ajoutées mais je n'ai pas encore mis a jour ce README et les screenshots
+
 Un petit outil codé en un après midi pour m'assister dans l'utilisation du Mythic Game Master Emulator
 
 On peut poser ses questions et gérer son facteur de chaos
