@@ -653,59 +653,80 @@
         </div>
 
         <!-- Onglet Personnages -->
-        <div class="tab-pane fade" id="players" role="tabpanel" aria-labelledby="players-tab">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h2 class="text-center">Gestion des Personnages</h2>
+<!-- Onglet Personnages -->
+<div class="tab-pane fade" id="players" role="tabpanel" aria-labelledby="players-tab">
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="text-center">Gestion des Personnages</h2>
 
-                    <!-- Formulaire pour ajouter un PJ -->
-                    <form action="/add_player" method="post" class="mb-3">
-                        <div class="input-group">
-                            <input type="text" name="name" class="form-control" placeholder="Nom du personnage" required>
-                            <input type="text" name="description" class="form-control" placeholder="Description">
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
+            <!-- Formulaire pour ajouter un PJ -->
+            <form action="/add_player" method="post" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="name" class="form-control" placeholder="Nom du personnage" required>
+                    <input type="text" name="description" class="form-control" placeholder="Description">
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+
+            <!-- Liste des personnages -->
+            <ul class="list-group">
+                {% for player in players %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ player.name }}</strong>
+                        <div>
+                            <button class="btn btn-secondary btn-sm me-2" onclick="toggleAttributes({{ player.id }})">📋 Attributs</button>
+                            <button class="btn btn-secondary btn-sm me-2" onclick="toggleDescEdit({{ player.id }})">✏️ Modifier Description</button>
+                            <a href="{{ url_for('delete_player', player_id=player.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
                         </div>
+                    </div>
+
+                    <!-- Zone de description en mode lecture -->
+                    <div id="desc-view-{{ player.id }}" class="mt-2">
+                        {% if player.description %}
+                        {% set lines = player.description.split('\n') %}
+                        <span id="desc-short-{{ player.id }}" style="white-space: pre-line;">{{ lines[0] }}</span>
+                        {% if lines|length > 1 %}
+                            <span id="desc-full-{{ player.id }}" class="d-none" style="white-space: pre-line;"><br>{{ lines[1:] | join('\n') }}</span>
+                            <a href="javascript:void(0)" id="toggleDescLink-{{ player.id }}" onclick="toggleFullDesc({{ player.id }})"> …Voir plus</a>
+                        {% endif %}
+                        {% else %}
+                        Aucune description.
+                        {% endif %}
+                    </div>
+  
+                    <!-- Zone de description en mode édition (cachée par défaut) -->
+                    <form id="desc-edit-{{ player.id }}" class="d-none" action="/edit_player_description/{{ player.id }}" method="post">
+                        <textarea name="description" class="form-control" rows="4" id="desc-textarea-{{ player.id }}">{{ player.description }}</textarea>
+                        <button type="submit" class="btn btn-success btn-sm mt-2">💾 Enregistrer</button>
+                        <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="toggleDescEdit({{ player.id }})">❌ Annuler</button>
                     </form>
 
-                    <!-- Liste des personnages -->
-                    <ul class="list-group">
-                        {% for player in players %}
-                        <li class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <strong>{{ player.name }}</strong> - <em>{{ player.description }}</em>
-                                <div>
-                                    <button class="btn btn-secondary btn-sm me-2" onclick="toggleAttributes({{ player.id }})">📋 Voir</button>
-                                    <a href="{{ url_for('delete_player', player_id=player.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
-                                </div>
+                    <!-- Zone d'attributs (affichage et gestion) -->
+                    <div id="attributes-{{ player.id }}" class="mt-2 d-none">
+                        <ul class="list-group">
+                            {% for attr in player.attributes %}
+                            <li class="list-group-item">
+                                <strong>{{ attr.attribute_name }}</strong> : {{ attr.attribute_value }}
+                                <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm float-end">❌ Supprimer</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <!-- Formulaire pour ajouter un attribut -->
+                        <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2">
+                            <div class="input-group">
+                                <input type="text" name="attribute_name" class="form-control" placeholder="Nom de l'attribut" required>
+                                <input type="text" name="attribute_value" class="form-control" placeholder="Valeur">
+                                <button type="submit" class="btn btn-success">➕ Ajouter</button>
                             </div>
-
-                            <!-- Contenu des attributs -->
-                            <div id="attributes-{{ player.id }}" class="mt-2 d-none">
-                                <ul class="list-group">
-                                    {% for attr in player.attributes %}
-                                    <li class="list-group-item">
-                                        <strong>{{ attr.attribute_name }}</strong>: {{ attr.attribute_value }}
-                                        <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm float-end">❌</a>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-
-                                <!-- Formulaire pour ajouter un attribut -->
-                                <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2">
-                                    <div class="input-group">
-                                        <input type="text" name="attribute_name" class="form-control" placeholder="Nom de l'attribut" required>
-                                        <input type="text" name="attribute_value" class="form-control" placeholder="Valeur">
-                                        <button type="submit" class="btn btn-success">➕ Ajouter</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
+</div>
 
 <!-- Fin de la section Onglets -->
           
@@ -897,6 +918,7 @@
             }
         });
     }
+    
     function toggleItems(inventoryId) {
         let itemsDiv = document.getElementById("items-" + inventoryId);
         if (itemsDiv.classList.contains("d-none")) {
@@ -905,6 +927,7 @@
             itemsDiv.classList.add("d-none");
         }
     }
+
     function toggleAttributes(playerId) {
         let attrDiv = document.getElementById("attributes-" + playerId);
         if (attrDiv.classList.contains("d-none")) {
@@ -912,6 +935,30 @@
         } else {
             attrDiv.classList.add("d-none");
         }
+    }
+
+    function toggleDescEdit(playerId) {
+        let view = document.getElementById("desc-view-" + playerId);
+        let edit = document.getElementById("desc-edit-" + playerId);
+        if (edit.classList.contains("d-none")) {
+            edit.classList.remove("d-none");
+            view.classList.add("d-none");
+        } else {
+            edit.classList.add("d-none");
+            view.classList.remove("d-none");
+        }
+    }
+
+    function toggleFullDesc(playerId) {
+      var fullSpan = document.getElementById("desc-full-" + playerId);
+      var toggleLink = document.getElementById("toggleDescLink-" + playerId);
+      if (fullSpan.classList.contains("d-none")) {
+          fullSpan.classList.remove("d-none");
+          toggleLink.innerText = " …Voir moins";
+      } else {
+          fullSpan.classList.add("d-none");
+          toggleLink.innerText = " …Voir plus";
+      }
     }
 </script>
 

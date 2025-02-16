@@ -1586,6 +1586,13 @@ def delete_player_attribute(attribute_id):
     db.session.commit()
     return redirect(url_for("index") + "#players")
 
+@app.route("/edit_player_description/<int:player_id>", methods=["POST"])
+def edit_player_description(player_id):
+    player = PlayerCharacter.query.get_or_404(player_id)
+    player.description = request.form.get("description").strip()
+    db.session.commit()
+    return redirect(url_for("index") + "#players")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
