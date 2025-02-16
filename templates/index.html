@@ -549,8 +549,7 @@
         <div class="tab-pane fade" id="journal" role="tabpanel" aria-labelledby="journal-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2 class="text-center">📖 Journal</h2>
-
+                    <h2 class="text-center">Journal</h2>
                     <!-- Formulaire pour ajouter une entrée -->
                     <form action="/add_journal_entry" method="post">
                         <div class="mb-2">
@@ -564,13 +563,18 @@
             <!-- Affichage des entrées -->
             <div class="card">
                 <div class="card-body">
-                    <h4>📝 Entrées récentes</h4>
+                    <h4>Entrées récentes</h4>
                     {% if journal_entries.items %}
                         <ul class="list-group">
                             {% for entry in journal_entries.items %}
                             <li class="list-group-item">
                                 <small class="text-muted">{{ entry.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
-                                <p>{{ entry.content }}</p>
+                                <p class="entry-content" id="entry-content-{{ entry.id }}" data-full-content="{{ entry.content }}" style="white-space: pre-line;">
+                                    {{ entry.content.split('\n')[0] }}
+                                </p>
+                                {% if entry.content.split('\n')|length > 1 %}
+                                <a href="javascript:void(0)" id="toggle-link-{{ entry.id }}" onclick="toggleEntryContent({{ entry.id }})">Voir plus</a>
+                                {% endif %}
                                 <a href="{{ url_for('delete_journal_entry', entry_id=entry.id) }}" class="text-danger float-end">Supprimer</a>
                             </li>
                             {% endfor %}
@@ -824,6 +828,20 @@
         }
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const entryContents = document.querySelectorAll(".entry-content");
+
+        entryContents.forEach(entry => {
+            const fullContent = entry.dataset.fullContent;
+            const firstLine = fullContent.split('\n')[0];
+            entry.textContent = firstLine; // Ensure initial state is the first line
+            if (fullContent.split('\n').length > 1) {
+                entry.textContent += '...'; // Add ellipsis if there is more content
+            }
+            entry.dataset.isSummary = "true"; // Track the initial mode
+        });
+    });
+
     let triggerTabs = document.querySelectorAll('#mainTab button');
     triggerTabs.forEach(tab => {
         tab.addEventListener('shown.bs.tab', function (event) {
@@ -859,6 +877,11 @@
         .then(response => response.json())
         .then(data => {
             document.getElementById("sceneChaosRollResult").innerText = "Jet : " + data.roll + " → Scène " + data.status;
+            // Update the dropdown based on the chaos roll result
+            const statusSelect = document.querySelector('select[name="status"]');
+            if (statusSelect) {
+                statusSelect.value = data.status;
+            }
         });
     });
 
@@ -1005,6 +1028,27 @@
     function toggleNumericValidation(playerId) {
         let errorMsg = document.getElementById(`error-msg-${playerId}`);
         errorMsg.classList.add("d-none");  // Masquer l'erreur si on décoche
+    }
+
+    function toggleEntryContent(entryId) {
+        const entryContent = document.getElementById(`entry-content-${entryId}`);
+        const toggleLink = document.getElementById(`toggle-link-${entryId}`);
+        const fullContent = entryContent.dataset.fullContent;
+        const firstLine = fullContent.split('\n')[0];
+        const isSummary = entryContent.dataset.isSummary === "true";
+
+        if (isSummary) {
+            entryContent.textContent = fullContent;
+            toggleLink.textContent = "Voir moins";
+            entryContent.dataset.isSummary = "false";
+        } else {
+            entryContent.textContent = firstLine;
+            if (fullContent.split('\n').length > 1) {
+                entryContent.textContent += '...'; // Add ellipsis if there is more content
+            }
+            toggleLink.textContent = "Voir plus";
+            entryContent.dataset.isSummary = "true";
+        }
     }
 
 </script>
