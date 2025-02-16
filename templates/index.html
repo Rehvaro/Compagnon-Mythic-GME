@@ -706,19 +706,33 @@
                     <div id="attributes-{{ player.id }}" class="mt-2 d-none">
                         <ul class="list-group">
                             {% for attr in player.attributes %}
-                            <li class="list-group-item">
-                                <strong>{{ attr.attribute_name }}</strong> : {{ attr.attribute_value }}
-                                <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm float-end">❌ Supprimer</a>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ attr.attribute_name }}</strong> :
+                                    <span id="attr-value-{{ attr.id }}">{{ attr.attribute_value }}</span>
+                                </div>
+                                <div>
+                                    {% if attr.is_numeric %}
+                                        <button class="btn btn-danger btn-sm me-1" onclick="updateAttribute({{ attr.id }}, 'decrease')">-</button>
+                                        <button class="btn btn-success btn-sm me-2" onclick="updateAttribute({{ attr.id }}, 'increase')">+</button>
+                                    {% endif %}
+                                    <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm">❌</a>
+                                </div>
                             </li>
                             {% endfor %}
                         </ul>
                         <!-- Formulaire pour ajouter un attribut -->
-                        <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2">
+                        <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2" onsubmit="return validateAttributeForm({{ player.id }})">
                             <div class="input-group">
                                 <input type="text" name="attribute_name" class="form-control" placeholder="Nom de l'attribut" required>
-                                <input type="text" name="attribute_value" class="form-control" placeholder="Valeur">
+                                <input type="text" name="attribute_value" id="attribute_value_{{ player.id }}" class="form-control" placeholder="Valeur" required>
+                                <span class="input-group-text">
+                                    <input type="checkbox" name="is_numeric" id="is_numeric_{{ player.id }}" onchange="toggleNumericValidation({{ player.id }})">
+                                    <label for="is_numeric_{{ player.id }}" class="mb-0 ms-1">Numérique</label>
+                                </span>
                                 <button type="submit" class="btn btn-success">➕ Ajouter</button>
                             </div>
+                            <p id="error-msg-{{ player.id }}" class="text-danger mt-1 d-none">⚠️ La valeur doit être un nombre si "Numérique" est coché.</p>
                         </form>
                     </div>
                 </li>
@@ -960,6 +974,39 @@
           toggleLink.innerText = " …Voir plus";
       }
     }
+
+    function updateAttribute(attributeId, operation) {
+        fetch(`/update_attribute/${attributeId}/${operation}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`attr-value-${attributeId}`).innerText = data.new_value;
+            } else {
+                console.error("Erreur lors de la mise à jour de l'attribut.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    function validateAttributeForm(playerId) {
+        let isNumericChecked = document.getElementById(`is_numeric_${playerId}`).checked;
+        let attributeValue = document.getElementById(`attribute_value_${playerId}`).value.trim();
+        let errorMsg = document.getElementById(`error-msg-${playerId}`);
+
+        if (isNumericChecked && isNaN(attributeValue)) {
+            errorMsg.classList.remove("d-none");  // Afficher l'erreur
+            return false;  // Bloquer l'envoi du formulaire
+        }
+
+        errorMsg.classList.add("d-none");  // Masquer l'erreur si tout est bon
+        return true;  // Autoriser l'envoi du formulaire
+    }
+
+    function toggleNumericValidation(playerId) {
+        let errorMsg = document.getElementById(`error-msg-${playerId}`);
+        errorMsg.classList.add("d-none");  // Masquer l'erreur si on décoche
+    }
+
 </script>
 
 

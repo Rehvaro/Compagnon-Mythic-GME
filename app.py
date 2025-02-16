@@ -74,8 +74,9 @@ class PlayerCharacter(db.Model):
 class PlayerAttribute(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     character_id = db.Column(db.Integer, db.ForeignKey('player_character.id'), nullable=False)
-    attribute_name = db.Column(db.String(200), nullable=False)  # Nom de l'attribut (ex : Force, PV, Mana, etc.)
-    attribute_value = db.Column(db.String(200), nullable=False) # Valeur de l'attribut (ex : 12, 50/100, etc.)
+    attribute_name = db.Column(db.String(200), nullable=False)
+    attribute_value = db.Column(db.String(200), nullable=False)
+    is_numeric = db.Column(db.Boolean, default=False)  # Nouveau champ pour indiquer si c'est numérique
     character = db.relationship('PlayerCharacter', backref=db.backref('attributes', lazy=True, cascade="all, delete"))
 
 
@@ -359,6 +360,26 @@ def delete_inventory_item(item_id):
     db.session.delete(item)
     db.session.commit()
     return redirect(url_for("index") + "#inventories")
+
+@app.route("/update_attribute/<int:attribute_id>/<string:operation>", methods=["POST"])
+def update_attribute(attribute_id, operation):
+    attr = PlayerAttribute.query.get_or_404(attribute_id)
+    
+    # Vérifier que l'attribut est numérique
+    if attr.is_numeric:
+        try:
+            value = int(attr.attribute_value)
+        except ValueError:
+            value = 0  # Si la valeur n'est pas numérique, le réinitialiser
+        if operation == "increase":
+            value += 1
+        elif operation == "decrease":
+            value -= 1
+        attr.attribute_value = str(value)
+        db.session.commit()
+        return jsonify({"success": True, "new_value": value})  # Retour JSON
+    
+    return jsonify({"success": False}), 400  # Erreur si l'attribut n'est pas numérique
 
 
 # -
@@ -1573,10 +1594,24 @@ def delete_player(player_id):
 def add_player_attribute(player_id):
     attr_name = request.form.get("attribute_name").strip()
     attr_value = request.form.get("attribute_value").strip()
-    if attr_name and attr_value:
-        new_attr = PlayerAttribute(character_id=player_id, attribute_name=attr_name, attribute_value=attr_value)
-        db.session.add(new_attr)
-        db.session.commit()
+    is_numeric = request.form.get("is_numeric") == "on"  # True si coché
+
+    # Vérification côté serveur
+    if is_numeric:
+        try:
+            int(attr_value)  # Essayer de convertir en entier
+        except ValueError:
+            flash("⚠️ La valeur doit être un nombre si 'Numérique' est coché.", "danger")
+            return redirect(url_for("index") + "#players")
+
+    new_attr = PlayerAttribute(
+        character_id=player_id,
+        attribute_name=attr_name,
+        attribute_value=attr_value,
+        is_numeric=is_numeric
+    )
+    db.session.add(new_attr)
+    db.session.commit()
     return redirect(url_for("index") + "#players")
 
 @app.route("/delete_player_attribute/<int:attribute_id>")
