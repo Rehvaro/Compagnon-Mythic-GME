@@ -317,12 +317,12 @@
                     <ul class="nav nav-pills mb-3 justify-content-center" id="tablesTab" role="tablist">
                         <li class="nav-item">
                             <button class="nav-link active" id="mythic-tables-tab" data-bs-toggle="tab" data-bs-target="#mythic-tables" type="button" role="tab">
-                                📜 Tables Mythic GME
+                                Tables Mythic GME
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link" id="custom-tables-tab" data-bs-toggle="tab" data-bs-target="#custom-tables" type="button" role="tab">
-                                ✨ Tables Personnelles
+                                Tables Personnelles
                             </button>
                         </li>
                     </ul>
@@ -330,7 +330,7 @@
                     <div class="tab-content">
                         <!-- Tables du Mythic GME -->
                         <div class="tab-pane fade show active" id="mythic-tables" role="tabpanel">
-                            <h4 class="text-center">📜 Tables Officielles</h4>
+                            <h4 class="text-center">Tables Officielles</h4>
                             <h4 class="text-center">Généraux</h4>
                             <div class="row">
                                 <div class="col-md-6">
@@ -471,7 +471,7 @@
 
                         <!-- Tables Personnelles -->
                         <div class="tab-pane fade" id="custom-tables" role="tabpanel">
-                            <h4 class="text-center">✨ Tables Personnelles</h4>
+                            <h4 class="text-center">Tables Personnelles</h4>
                             <!-- Liste des tables personnalisées sauvegardées -->
                             <div id="customTablesContainer" class="mt-3">
                                 {% if custom_tables|length == 0 %}
@@ -500,7 +500,7 @@
                             
                             <!-- Formulaire d'ajout -->
                             <div class="mt-4">
-                                <h5>➕ Ajouter une Table Personnelle</h5>
+                                <h5>Ajouter une Table Personnelle</h5>
                                 <form action="/add_custom_table" method="post">
                                     <div class="mb-2">
                                         <input type="text" name="customTableName" id="customTableName" class="form-control" placeholder="Nom de la table" required>
