@@ -55,6 +55,18 @@ class JournalEntry(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)  # Date automatique
     content = db.Column(db.Text, nullable=False)
 
+class Inventory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+
+class InventoryItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    inventory = db.relationship('Inventory', backref=db.backref('items', lazy=True, cascade="all, delete"))
+
+
 with app.app_context():
     db.create_all()
 
@@ -127,6 +139,8 @@ def index():
     last_fq = fate_questions.items[0] if fate_questions.items else None
     current_scene = Scene.query.order_by(Scene.id.desc()).first()
 
+    inventories = Inventory.query.all()
+
     return render_template("index.html", 
                        chaos_factor=game_state.chaos_factor, 
                        fate_questions=fate_questions, 
@@ -138,6 +152,7 @@ def index():
                        custom_tables=custom_tables, 
                        journal_entries=journal_entries,
                        current_fate_page=fate_page,
+                       inventories=inventories,
                        custom_tables_json=json.dumps([{ "id": t.id, "name": t.name, "values": t.values } for t in custom_tables]))
 
 
@@ -295,6 +310,40 @@ def export_journal():
         markdown_content += f"## {entry.date.strftime('%Y-%m-%d %H:%M:%S')}\n\n{entry.content}\n\n---\n\n"
     
     return Response(markdown_content, mimetype="text/markdown", headers={"Content-Disposition": "attachment;filename=journal.md"})
+
+@app.route("/add_inventory", methods=["POST"])
+def add_inventory():
+    title = request.form.get("title").strip()
+    if title:
+        new_inventory = Inventory(title=title)
+        db.session.add(new_inventory)
+        print(new_inventory)
+        db.session.commit()
+    return redirect(url_for("index") + "#inventories")
+
+@app.route("/delete_inventory/<int:inventory_id>")
+def delete_inventory(inventory_id):
+    inventory = Inventory.query.get_or_404(inventory_id)
+    db.session.delete(inventory)
+    db.session.commit()
+    return redirect(url_for("index") + "#inventories")
+
+@app.route("/add_inventory_item/<int:inventory_id>", methods=["POST"])
+def add_inventory_item(inventory_id):
+    name = request.form.get("name").strip()
+    description = request.form.get("description").strip()
+    if name:
+        new_item = InventoryItem(inventory_id=inventory_id, name=name, description=description)
+        db.session.add(new_item)
+        db.session.commit()
+    return redirect(url_for("index") + "#inventories")
+
+@app.route("/delete_inventory_item/<int:item_id>")
+def delete_inventory_item(item_id):
+    item = InventoryItem.query.get_or_404(item_id)
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for("index") + "#inventories")
 
 
 # -

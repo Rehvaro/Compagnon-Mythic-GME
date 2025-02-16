@@ -50,6 +50,11 @@
             </button>
         </li>
         <li class="nav-item">
+            <button class="nav-link" id="inventories-tab" data-bs-toggle="tab" data-bs-target="#inventories" type="button" role="tab">
+                Inventaires
+            </button>
+        </li>        
+        <li class="nav-item">
             <button class="nav-link" id="d100-tab" data-bs-toggle="tab" data-bs-target="#d100" type="button" role="tab">
                 Lanceur de d100
             </button>
@@ -67,8 +72,8 @@
                 <div class="card-body">
                     <h4>Facteur de Chaos : <span class="badge bg-warning text-dark">{{ chaos_factor }}</span></h4>
                     <form action="/adjust_chaos" method="post" class="d-flex">
-                        <button type="submit" name="adjustment" value="1" class="btn btn-success me-2">+1</button>
                         <button type="submit" name="adjustment" value="-1" class="btn btn-danger">-1</button>
+                        <button type="submit" name="adjustment" value="1" class="btn btn-success me-2">+1</button>
                     </form>
                 </div>
             </div>
@@ -589,7 +594,60 @@
                 <a href="{{ url_for('export_journal') }}" class="btn btn-success">📥 Exporter en Markdown</a>
             </div>
         </div>
+        <!-- Onglet Inventaires -->
+        <div class="tab-pane fade" id="inventories" role="tabpanel" aria-labelledby="inventories-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="text-center">Gestion des Inventaires</h2>
 
+                    <!-- Formulaire pour ajouter un nouvel inventaire -->
+                    <form action="/add_inventory" method="post" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="title" class="form-control" placeholder="Nom de l'inventaire" required>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+
+                    <!-- Liste des inventaires -->
+                    <ul class="list-group">
+                        {% for inventory in inventories %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>{{ inventory.title }}</strong>
+                                <div>
+                                    <button class="btn btn-secondary btn-sm me-2" onclick="toggleItems({{ inventory.id }})">📝 Voir</button>
+                                    <a href="{{ url_for('delete_inventory', inventory_id=inventory.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
+                                </div>
+                            </div>
+
+                            <!-- Contenu des éléments de l'inventaire -->
+                            <div id="items-{{ inventory.id }}" class="mt-2 d-none">
+                                <ul class="list-group">
+                                    {% for item in inventory.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ item.name }}</strong>: {{ item.description }}
+                                        <a href="{{ url_for('delete_inventory_item', item_id=item.id) }}" class="btn btn-danger btn-sm float-end">❌</a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
+                                <!-- Formulaire pour ajouter un élément -->
+                                <form action="/add_inventory_item/{{ inventory.id }}" method="post" class="mt-2">
+                                    <div class="input-group">
+                                        <input type="text" name="name" class="form-control" placeholder="Nom de l'objet" required>
+                                        <input type="text" name="description" class="form-control" placeholder="Description">
+                                        <button type="submit" class="btn btn-success">➕ Ajouter</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!-- Fin de la section Onglets -->
           
 <script>
     // Charger toutes les tables dans une variable JavaScript pour éviter les erreurs de saut de ligne
@@ -780,6 +838,18 @@
         });
     }
 </script>
+
+<script>
+    function toggleItems(inventoryId) {
+        let itemsDiv = document.getElementById("items-" + inventoryId);
+        if (itemsDiv.classList.contains("d-none")) {
+            itemsDiv.classList.remove("d-none");
+        } else {
+            itemsDiv.classList.add("d-none");
+        }
+    }
+</script>
+
 
 </body>
 </html>
