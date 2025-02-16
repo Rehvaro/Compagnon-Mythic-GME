@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Compagnon Mythic GME</title>
+    <title>Compagnon Mythic GME 🌟</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -16,7 +16,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="text-center mb-2">Compagnon Mythic GME</h1>
+    <h1 class="text-center mb-2">Compagnon Mythic GME 🌟</h1>
     <!-- Bandeau rappelant le facteur de chaos et la scène actuelle -->
     <div class="alert alert-secondary text-center">
         <strong>Facteur Chaos actuel :</strong> {{ chaos_factor }} &nbsp; | &nbsp;
@@ -26,47 +26,47 @@
     <ul class="nav nav-tabs" id="mainTab" role="tablist">
         <li class="nav-item">
             <button class="nav-link active" id="fate-tab" data-bs-toggle="tab" data-bs-target="#fate" type="button" role="tab">
-                Questions du Destin & Facteur Chaos
+                Questions du Destin & Facteur Chaos 🎲
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" id="objectives-tab" data-bs-toggle="tab" data-bs-target="#objectives" type="button" role="tab">
-                Objectifs
+                Objectifs 🎯
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players" type="button" role="tab">
-                Personnages
+                Personnages 🧙‍♂️
             </button>
         </li>        
         <li class="nav-item">
             <button class="nav-link" id="npcs-tab" data-bs-toggle="tab" data-bs-target="#npcs" type="button" role="tab">
-                PNJs
+                PNJs 👥
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" id="scenes-tab" data-bs-toggle="tab" data-bs-target="#scenes" type="button" role="tab">
-                Scènes & Chaos Roll
+                Scènes & Chaos Roll 🎭
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" id="tables-tab" data-bs-toggle="tab" data-bs-target="#tables" type="button" role="tab">
-                Tables Aléatoires
+                Tables Aléatoires 🎲
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" id="inventories-tab" data-bs-toggle="tab" data-bs-target="#inventories" type="button" role="tab">
-                Inventaires
+                Inventaires 📦
             </button>
         </li>        
         <li class="nav-item">
             <button class="nav-link" id="d100-tab" data-bs-toggle="tab" data-bs-target="#d100" type="button" role="tab">
-                Lanceur de d100
+                Lanceur de d100 🎲
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" id="journal-tab" data-bs-toggle="tab" data-bs-target="#journal" type="button" role="tab">
-                Journal
+                Journal 📓
             </button>
         </li>
     </ul>
@@ -85,7 +85,7 @@
             <!-- Formulaire Questions du Destin -->
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2>Poser une Question du Destin</h2>
+                    <h2>Poser une Question du Destin ❓</h2>
                     <form action="/ask_fate" method="post">
                         <div class="mb-3">
                             <input type="text" name="question" class="form-control" placeholder="Votre question" required>
@@ -142,7 +142,7 @@
                         <strong>Probabilités :</strong> {{ last_fq.odds }}<br>
                         <strong>Résultat :</strong> {{ last_fq.answer }}
                         {% if last_fq.random_event %}
-                            <span class="badge bg-danger">Événement aléatoire déclenché !</span>
+                            <span class="badge bg-danger">Événement aléatoire déclenché ! 🎉</span>
                         {% endif %}
                     </p>
                     <small>
@@ -157,7 +157,7 @@
             <!-- Affichage des Questions du Destin paginées -->
             <div class="card">
                 <div class="card-body">
-                    <h2>Historique des Questions du Destin</h2>
+                    <h2>Historique des Questions du Destin 📜</h2>
                     <ul class="list-group">
                         {% for fq in fate_questions.items %}
                         <li class="list-group-item">
@@ -195,7 +195,7 @@
         <div class="tab-pane fade" id="objectives" role="tabpanel" aria-labelledby="objectives-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2>Ajouter un Objectif</h2>
+                    <h2>Ajouter un Objectif 🎯</h2>
                     <form action="/add_objective" method="post">
                         <div class="input-group">
                             <input type="text" name="description" class="form-control" placeholder="Nouvel objectif" required>
@@ -206,7 +206,7 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h2>Liste des Objectifs</h2>
+                    <h2>Liste des Objectifs 📋</h2>
                     <ul class="list-group">
                         {% for obj in objectives %}
                         <li class="list-group-item">
@@ -223,7 +223,7 @@
         <div class="tab-pane fade" id="npcs" role="tabpanel" aria-labelledby="npcs-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2>Ajouter un PNJ</h2>
+                    <h2>Ajouter un PNJ 👤</h2>
                     <form action="/add_npc" method="post">
                         <div class="mb-3">
                             <input type="text" name="name" class="form-control" placeholder="Nom du PNJ" required>
@@ -237,7 +237,7 @@
             </div>
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2>Liste des PNJs</h2>
+                    <h2>Liste des PNJs 👥</h2>
                     <ul class="list-group">
                         {% for npc in npcs %}
                         <li class="list-group-item">
@@ -250,7 +250,7 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h2>Tirage d'un PNJ aléatoire</h2>
+                    <h2>Tirage d'un PNJ aléatoire 🎲</h2>
                     <button id="randomNpcBtn" class="btn btn-secondary">Tirer un PNJ</button>
                     <p id="randomNpcResult" class="mt-2"></p>
                 </div>
@@ -261,7 +261,7 @@
         <div class="tab-pane fade" id="scenes" role="tabpanel" aria-labelledby="scenes-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2>Ajouter une Scène</h2>
+                    <h2>Ajouter une Scène 🎬</h2>
                     <form action="/add_scene" method="post">
                         <div class="mb-3">
                             <input type="text" name="title" class="form-control" placeholder="Titre de la scène" required>
@@ -284,7 +284,7 @@
             <!-- Bouton Chaos Roll pour la scène suivante -->
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2>Chaos Roll pour la scène suivante</h2>
+                    <h2>Chaos Roll pour la scène suivante 🎲</h2>
                     <button id="sceneChaosRollBtn" class="btn btn-secondary">Lancer le Chaos Roll</button>
                     <p id="sceneChaosRollResult" class="mt-2"></p>
                     <small>
@@ -294,7 +294,7 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h2>Liste des Scènes</h2>
+                    <h2>Liste des Scènes 🎭</h2>
                     <ul class="list-group">
                         {% for scene in scenes %}
                         <li class="list-group-item">
@@ -311,18 +311,18 @@
         <div class="tab-pane fade" id="tables" role="tabpanel" aria-labelledby="tables-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2 class="text-center">Tables Aléatoires</h2>
+                    <h2 class="text-center">Tables Aléatoires 🎲</h2>
 
                     <!-- Tabs pour séparer les catégories -->
                     <ul class="nav nav-pills mb-3 justify-content-center" id="tablesTab" role="tablist">
                         <li class="nav-item">
                             <button class="nav-link active" id="mythic-tables-tab" data-bs-toggle="tab" data-bs-target="#mythic-tables" type="button" role="tab">
-                                Tables Mythic GME
+                                Tables Mythic GME 📜
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link" id="custom-tables-tab" data-bs-toggle="tab" data-bs-target="#custom-tables" type="button" role="tab">
-                                Tables Personnelles
+                                Tables Personnelles 🛠️
                             </button>
                         </li>
                     </ul>
@@ -330,8 +330,8 @@
                     <div class="tab-content">
                         <!-- Tables du Mythic GME -->
                         <div class="tab-pane fade show active" id="mythic-tables" role="tabpanel">
-                            <h4 class="text-center">Tables Officielles</h4>
-                            <h4 class="text-center">Généraux</h4>
+                            <h4 class="text-center">Tables Officielles 📜</h4>
+                            <h4 class="text-center">Généraux ⚔️</h4>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="d-grid gap-2">
@@ -347,7 +347,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <h4 class="text-center">Tables de Sens</h4>
+                            <h4 class="text-center">Tables de Sens 🔍</h4>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="d-grid gap-2">
@@ -471,7 +471,7 @@
 
                         <!-- Tables Personnelles -->
                         <div class="tab-pane fade" id="custom-tables" role="tabpanel">
-                            <h4 class="text-center">Tables Personnelles</h4>
+                            <h4 class="text-center">Tables Personnelles 🛠️</h4>
                             <!-- Liste des tables personnalisées sauvegardées -->
                             <div id="customTablesContainer" class="mt-3">
                                 {% if custom_tables|length == 0 %}
@@ -500,7 +500,7 @@
                             
                             <!-- Formulaire d'ajout -->
                             <div class="mt-4">
-                                <h5>Ajouter une Table Personnelle</h5>
+                                <h5>Ajouter une Table Personnelle 🛠️</h5>
                                 <form action="/add_custom_table" method="post">
                                     <div class="mb-2">
                                         <input type="text" name="customTableName" id="customTableName" class="form-control" placeholder="Nom de la table" required>
@@ -523,7 +523,7 @@
               <form action="" method="post" id="editCustomTableForm">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="editCustomTableModalLabel">Éditer la Table Personnelle</h5>
+                    <h5 class="modal-title" id="editCustomTableModalLabel">Éditer la Table Personnelle 🛠️</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                   </div>
                   <div class="modal-body">
@@ -549,7 +549,7 @@
         <div class="tab-pane fade" id="journal" role="tabpanel" aria-labelledby="journal-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2 class="text-center">Journal</h2>
+                    <h2 class="text-center">Journal 📓</h2>
                     <!-- Formulaire pour ajouter une entrée -->
                     <form action="/add_journal_entry" method="post">
                         <div class="mb-2">
@@ -563,7 +563,7 @@
             <!-- Affichage des entrées -->
             <div class="card">
                 <div class="card-body">
-                    <h4>Entrées récentes</h4>
+                    <h4>Entrées récentes 📝</h4>
                     {% if journal_entries.items %}
                         <ul class="list-group">
                             {% for entry in journal_entries.items %}
@@ -607,7 +607,7 @@
         <div class="tab-pane fade" id="inventories" role="tabpanel" aria-labelledby="inventories-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2 class="text-center">Gestion des Inventaires</h2>
+                    <h2 class="text-center">Gestion des Inventaires 📦</h2>
 
                     <!-- Formulaire pour ajouter un nouvel inventaire -->
                     <form action="/add_inventory" method="post" class="mb-3">
@@ -634,8 +634,13 @@
                                 <ul class="list-group">
                                     {% for item in inventory.items %}
                                     <li class="list-group-item">
-                                        <strong>{{ item.name }}</strong>: {{ item.description }}
-                                        <a href="{{ url_for('delete_inventory_item', item_id=item.id) }}" class="btn btn-danger btn-sm float-end">❌</a>
+                                        <strong>{{ item.name }}</strong>: {{ item.description }} 
+                                        <span id="quantity-{{ item.id }}" class="badge bg-secondary">Quantité:  {{ item.quantity }}</span>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-danger btn-sm me-1" onclick="updateItemQuantity({{ item.id }}, 'decrease')">-</button>
+                                            <button class="btn btn-success btn-sm me-2" onclick="updateItemQuantity({{ item.id }}, 'increase')">+</button>
+                                            <a href="{{ url_for('delete_inventory_item', item_id=item.id) }}" class="btn btn-danger btn-sm">❌</a>
+                                        </div>
                                     </li>
                                     {% endfor %}
                                 </ul>
@@ -645,6 +650,7 @@
                                     <div class="input-group">
                                         <input type="text" name="name" class="form-control" placeholder="Nom de l'objet" required>
                                         <input type="text" name="description" class="form-control" placeholder="Description">
+                                        <input type="number" name="quantity" class="form-control" placeholder="Quantité" min="1" value="1" required>
                                         <button type="submit" class="btn btn-success">➕ Ajouter</button>
                                     </div>
                                 </form>
@@ -661,7 +667,7 @@
 <div class="tab-pane fade" id="players" role="tabpanel" aria-labelledby="players-tab">
     <div class="card mb-3">
         <div class="card-body">
-            <h2 class="text-center">Gestion des Personnages</h2>
+            <h2 class="text-center">Gestion des Personnages 🧙‍♂️</h2>
 
             <!-- Formulaire pour ajouter un PJ -->
             <form action="/add_player" method="post" class="mb-3">
@@ -800,13 +806,28 @@
             content.style.display = "none";
         }
     }
+
+    // Fonction pour mettre à jour la quantité d'un objet
+    function updateItemQuantity(itemId, operation) {
+        fetch(`/update_item_quantity/${itemId}/${operation}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mettre à jour la quantité de l'élément spécifique
+                document.getElementById(`quantity-${itemId}`).innerText = data.new_quantity;
+            } else {
+                console.error("Erreur lors de la mise à jour de la quantité.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
 </script>
 
         <!-- Onglet Lanceur de d100 -->
         <div class="tab-pane fade" id="d100" role="tabpanel" aria-labelledby="d100-tab">
             <div class="card">
                 <div class="card-body">
-                    <h2>Lanceur de d100</h2>
+                    <h2>Lanceur de d100 🎲</h2>
                     <button id="rollD100Btn" class="btn btn-primary">Lancer 1d100</button>
                     <p id="d100Result" class="mt-2"></p>
                 </div>

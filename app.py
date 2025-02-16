@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 import random
 import json
@@ -64,6 +64,7 @@ class InventoryItem(db.Model):
     inventory_id = db.Column(db.Integer, db.ForeignKey('inventory.id'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    quantity = db.Column(db.Integer, default=1)
     inventory = db.relationship('Inventory', backref=db.backref('items', lazy=True, cascade="all, delete"))
 
 class PlayerCharacter(db.Model):
@@ -346,13 +347,19 @@ def delete_inventory(inventory_id):
 
 @app.route("/add_inventory_item/<int:inventory_id>", methods=["POST"])
 def add_inventory_item(inventory_id):
-    name = request.form.get("name").strip()
-    description = request.form.get("description").strip()
-    if name:
-        new_item = InventoryItem(inventory_id=inventory_id, name=name, description=description)
-        db.session.add(new_item)
-        db.session.commit()
-    return redirect(url_for("index") + "#inventories")
+    name = request.form.get("name")
+    description = request.form.get("description")
+    quantity = request.form.get("quantity", type=int)  # Récupérer la quantité en tant qu'entier
+
+    if not name or quantity < 1:
+        flash("Le nom de l'objet et une quantité valide sont requis.", "danger")
+        return redirect(url_for("index"))
+
+    new_item = InventoryItem(name=name, description=description, quantity=quantity, inventory_id=inventory_id)
+    db.session.add(new_item)
+    db.session.commit()
+    flash("Objet ajouté avec succès à l'inventaire.", "success")
+    return redirect(url_for("index"))
 
 @app.route("/delete_inventory_item/<int:item_id>")
 def delete_inventory_item(item_id):
@@ -380,6 +387,16 @@ def update_attribute(attribute_id, operation):
         return jsonify({"success": True, "new_value": value})  # Retour JSON
     
     return jsonify({"success": False}), 400  # Erreur si l'attribut n'est pas numérique
+
+@app.route("/update_item_quantity/<int:item_id>/<string:operation>", methods=["POST"])
+def update_item_quantity(item_id, operation):
+    item = InventoryItem.query.get_or_404(item_id)
+    if operation == "increase":
+        item.quantity += 1
+    elif operation == "decrease" and item.quantity > 0:
+        item.quantity -= 1
+    db.session.commit()
+    return jsonify({"success": True, "new_quantity": item.quantity, "inventory_id": item.inventory_id})
 
 
 # -
