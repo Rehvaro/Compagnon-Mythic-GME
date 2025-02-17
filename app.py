@@ -80,6 +80,12 @@ class PlayerAttribute(db.Model):
     is_numeric = db.Column(db.Boolean, default=False)  # Nouveau champ pour indiquer si c'est numérique
     character = db.relationship('PlayerCharacter', backref=db.backref('attributes', lazy=True, cascade="all, delete"))
 
+class DiceRollHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    faces = db.Column(db.Integer, nullable=False)
+    roll = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 with app.app_context():
     db.create_all()
@@ -1652,6 +1658,28 @@ def update_chaos():
     game_state.chaos_factor = max(1, min(9, game_state.chaos_factor + adjustment))
     db.session.commit()
     return jsonify({"new_chaos": game_state.chaos_factor})
+
+@app.route("/roll_dice/<int:faces>")
+def roll_dice(faces):
+    if faces < 1:
+        return jsonify({"error": "Nombre de faces invalide"}), 400
+    roll = random.randint(1, faces)
+    # Sauvegarder le lancer dans la base SQL
+    new_roll = DiceRollHistory(faces=faces, roll=roll)
+    db.session.add(new_roll)
+    db.session.commit()
+    return jsonify({"roll": roll, "faces": faces})
+
+@app.route("/dice_history")
+def dice_history():
+    history = DiceRollHistory.query.order_by(DiceRollHistory.date.desc()).limit(10).all()
+    # On prépare une liste de dictionnaires pour le JSON
+    history_list = [{
+        "date": entry.date.strftime("%Y-%m-%d %H:%M:%S"),
+        "faces": entry.faces,
+        "roll": entry.roll
+    } for entry in history]
+    return jsonify(history_list)
 
 if __name__ == "__main__":
     app.run(debug=True)
