@@ -1645,6 +1645,13 @@ def edit_player_description(player_id):
     db.session.commit()
     return redirect(url_for("index") + "#players")
 
+@app.route("/update_chaos", methods=["POST"])
+def update_chaos():
+    adjustment = int(request.form.get("adjustment"))
+    game_state = GameState.query.first()
+    game_state.chaos_factor = max(1, min(9, game_state.chaos_factor + adjustment))
+    db.session.commit()
+    return jsonify({"new_chaos": game_state.chaos_factor})
 
 if __name__ == "__main__":
     app.run(debug=True)

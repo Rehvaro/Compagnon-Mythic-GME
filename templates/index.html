@@ -19,7 +19,7 @@
     <h1 class="text-center mb-2">Compagnon Mythic GME 🌟</h1>
     <!-- Bandeau rappelant le facteur de chaos et la scène actuelle -->
     <div class="alert alert-secondary text-center">
-        <strong>Facteur Chaos actuel :</strong> {{ chaos_factor }} &nbsp; | &nbsp;
+        <strong>Facteur Chaos actuel :</strong> <span class="chaosValue">{{ chaos_factor }}</span> &nbsp; | &nbsp;
         <strong>Scène actuelle :</strong> {% if current_scene %} {{ current_scene.title }} [{{ current_scene.status }}] {% else %} Aucune scène {% endif %}
     </div>
     <!-- Onglets Bootstrap -->
@@ -75,11 +75,9 @@
         <div class="tab-pane fade show active" id="fate" role="tabpanel" aria-labelledby="fate-tab">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h4>Facteur de Chaos : <span class="badge bg-warning text-dark">{{ chaos_factor }}</span></h4>
-                    <form action="/adjust_chaos" method="post" class="d-flex">
-                        <button type="submit" name="adjustment" value="-1" class="btn btn-danger">-1</button>
-                        <button type="submit" name="adjustment" value="1" class="btn btn-success me-2">+1</button>
-                    </form>
+                    <h4>Facteur de Chaos : <span class="chaosValue badge bg-warning text-dark">{{ chaos_factor }}</span></h4>
+                    <button id="decreaseChaos" class="btn btn-danger">-1</button>
+                    <button id="increaseChaos" class="btn btn-success me-2">+1</button>
                 </div>
             </div>
             <!-- Formulaire Questions du Destin -->
@@ -1072,8 +1070,34 @@
         }
     }
 
+    // Fonction pour mettre à jour le facteur de chaos via AJAX
+    function updateChaos(adjustment) {
+        fetch("/update_chaos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "adjustment=" + adjustment
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour tous les éléments avec la classe "chaosValue"
+            document.querySelectorAll(".chaosValue").forEach(function(elem) {
+                elem.innerText = data.new_chaos;
+            });
+        })
+        .catch(error => console.error("Erreur lors de la mise à jour du chaos :", error));
+    }
+
+    // Associer les événements de clic aux boutons de mise à jour
+    document.getElementById("decreaseChaos").addEventListener("click", function(){
+        updateChaos(-1);
+    });
+
+    document.getElementById("increaseChaos").addEventListener("click", function(){
+        updateChaos(1);
+    });
+    
 </script>
-
-
 </body>
 </html>
