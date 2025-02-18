@@ -315,7 +315,7 @@
                     <ul class="nav nav-pills mb-3 justify-content-center" id="tablesTab" role="tablist">
                         <li class="nav-item">
                             <button class="nav-link active" id="mythic-tables-tab" data-bs-toggle="tab" data-bs-target="#mythic-tables" type="button" role="tab">
-                                Tables Mythic GME
+                                Tables par défaut
                             </button>
                         </li>
                         <li class="nav-item">
@@ -328,143 +328,236 @@
                     <div class="tab-content">
                         <!-- Tables du Mythic GME -->
                         <div class="tab-pane fade show active" id="mythic-tables" role="tabpanel">
-                            <h4 class="text-center">Tables Officielles</h4>
+                            <h4 class="text-center">Tables par défaut</h4>
                             <h4 class="text-center">Généraux</h4>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="d-grid gap-2">
                                         <button class="btn btn-primary" onclick="rollTable('scene_adjustment')">Ajustement de Scène</button>
-                                        <p id="sceneAdjustmentResult"></p>
+                                        <p id="scene_adjustmentResult"></p>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-grid gap-2">
                                         <button class="btn btn-primary" onclick="rollTable('random_event_focus')">Focus d'Événement Aléatoire</button>
                                     
-                                        <p id="randomEventFocusResult"></p>
+                                        <p id="random_event_focusResult"></p>
                                     </div>
                                 </div>
                             </div>
-                            <h4 class="text-center">Tables de Sens</h4>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('meaning_actions')">Actions</button>
-                                        <p id="meaningActionsResult"></p>
-                                        
-                                        <button class="btn btn-primary" onclick="rollTable('meaning_descriptors')">Descripteurs</button>
-                                        <p id="meaningDescriptorsResult"></p>
-                                        
-                                        <button class="btn btn-primary" onclick="rollTable('character_elements')">Caractèristique Personnages</button>
-                                        <p id="meaningcharacterResult"></p>
-                                    </div>
+                            <div class="container">
+                                <!-- Titre de la section -->
+                                <h4 class="text-center">Tables de sens divers</h4>
+
+                                <!-- Première ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('ACTIONS')">Action</button>
+                                    <p id="ACTIONSResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEURS')">Descripteur</button>
+                                    <p id="DESCRIPTEURSResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('ELEMENT_PERSONNAGE')">Personnage</button>
+                                    <p id="ELEMENT_PERSONNAGEResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('object_elements')">Objets</button>
-                                        <p id="object_elementsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_CRÉATURE')">Descripteurs Créature</button>
-                                        <p id="descripteursCreatureResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('MESSAGE_CRYPTIQUE')">Message Cryptique</button>
-                                        <p id="messageCryptiqueResult"></p>
-                                    </div>
+                                
+                                <!-- Deuxième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('ELEMENT_OBJET')">Objet</button>
+                                    <p id="ELEMENT_OBJETResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('ACTIONS_COMBAT')">Action de combat</button>
+                                    <p id="ACTIONS_COMBATResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('APPARENCE')">Apparence</button>
+                                    <p id="APPARENCEResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('MALEDICTIONS')">Malédictions</button>
-                                        <p id="maledictionsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_DOMICILE')">Descripteurs Domicile</button>
-                                        <p id="descripteursDomicileResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_DONJON')">Descripteurs Donjon</button>
-                                        <p id="descripteursDonjonResult"></p>
-                                    </div>
+                                
+                                <!-- Troisième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('IDENTITE_PERSONNAGE')">Identité personnage</button>
+                                    <p id="IDENTITE_PERSONNAGEResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('MOTIVATIONS')">Motivations</button>
+                                    <p id="MOTIVATIONSResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('PERSONNALITE')">Personnalité</button>
+                                    <p id="PERSONNALITEResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('PIÈGES_DONJON')">Pièges Donjon</button>
-                                        <p id="piegesDonjonResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_FORÊT')">Descripteurs Forêt</button>
-                                        <p id="descripteursForetResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DIEUX')">Dieux</button>
-                                        <p id="dieuxResult"></p>
-                                    </div>
+                                
+                                <!-- Quatrième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('CAPACITE_PERSONNAGE')">Capacité de personnage</button>
+                                    <p id="CAPACITE_PERSONNAGEResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('TRAITS_PERSONNAGE')">Trait de personnage</button>
+                                    <p id="TRAITS_PERSONNAGEResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DEFAUTS_PERSONNAGE')">Défaut de personnage</button>
+                                    <p id="DEFAUTS_PERSONNAGEResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('LÉGENDES')">Légendes</button>
-                                        <p id="legendesResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('EMPLACEMENTS')">Emplacements</button>
-                                        <p id="emplacementsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_OBJET_MAGIQUE')">Descripteurs Objet Magique</button>
-                                        <p id="descripteursObjetMagiqueResult"></p>
-                                    </div>
+                                
+                                <!-- Cinquième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_CITE')">Cité</button>
+                                    <p id="DESCRIPTEUR_CITEResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_CIVILISATION')">Civilisation</button>
+                                    <p id="DESCRIPTEUR_CIVILISATIONResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('CAPACITE_CREATURE')">Capacité de créature</button>
+                                    <p id="CAPACITE_CREATUREResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_MUTATION')">Descripteurs Mutation</button>
-                                        <p id="descripteursMutationResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('NOMS')">Noms</button>
-                                        <p id="nomsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('MAISON_NOBLE')">Maison Noble</button>
-                                        <p id="maisonNobleResult"></p>
-                                    </div>
+                                
+                                <!-- Sixième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_CREATURE')">Créature</button>
+                                    <p id="DESCRIPTEUR_CREATUREResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('MALEDICTIONS')">Malédictions</button>
+                                    <p id="MALEDICTIONSResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_DOMICILE')">Domicile</button>
+                                    <p id="DESCRIPTEUR_DOMICILEResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('OBJETS')">Objets</button>
-                                        <p id="objetsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('REBONDISSEMENTS')">Rebondissements</button>
-                                        <p id="rebondissementsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('POUVOIRS')">Pouvoirs</button>
-                                        <p id="pouvoirsResult"></p>
-                                    </div>
+                                
+                                <!-- Septième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_DONJON')">Donjon</button>
+                                    <p id="DESCRIPTEUR_DONJONResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('PIEGE_DONJON')">Piège</button>
+                                    <p id="PIEGE_DONJONResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_FORET')">Forêt</button>
+                                    <p id="DESCRIPTEUR_FORETResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('RÉSULTATS_FOUILLE')">Résultats Fouille</button>
-                                        <p id="resultatsFouilleResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('ODEURS')">Odeurs</button>
-                                        <p id="odeursResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('SONS')">Sons</button>
-                                        <p id="sonsResult"></p>
-                                    </div>
+                                
+                                <!-- Huitième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DIEUX')">Dieu</button>
+                                    <p id="DIEUXResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('LEGENDES')">Légende</button>
+                                    <p id="LEGENDESResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('LIEUX')">Endroit</button>
+                                    <p id="LIEUXResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('EFFETS_SORTS')">Effets Sorts</button>
-                                        <p id="effetsSortsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_VAISSEAU')">Descripteurs Vaisseau</button>
-                                        <p id="descripteursVaisseauResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_TERRAIN')">Descripteurs Terrain</button>
-                                        <p id="descripteursTerrainResult"></p>
-                                    </div>
+                                
+                                <!-- Neuvième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEURS_OBJETS_MAGIQUES')">Objet magique</button>
+                                    <p id="DESCRIPTEURS_OBJETS_MAGIQUESResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('MUTATION')">Mutation</button>
+                                    <p id="MUTATIONResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_NOMS')">Nom</button>
+                                    <p id="DESCRIPTEUR_NOMSResult"></p>
+                                  </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-primary" onclick="rollTable('DESCRIPTEURS_MORTS_VIVANTS')">Descripteurs Morts-Vivants</button>
-                                        <p id="descripteursMortsVivantsResult"></p>
-
-                                        <button class="btn btn-primary" onclick="rollTable('VISIONS_RÊVES')">Visions Rêves</button>
-                                        <p id="visionsRevesResult"></p>
-                                    </div>
+                                
+                                <!-- Dixième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('SYLLABE_NOMS')">Syllabe de nom</button>
+                                    <p id="SYLLABE_NOMSResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('POUVOIR')">Pouvoir</button>
+                                    <p id="POUVOIRResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('RÊVE')">Rêve</button>
+                                    <p id="RÊVEResult"></p>
+                                  </div>
                                 </div>
-                            </div>
+                                
+                                <!-- Onzième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('REBONDISSEMENT')">Rebondissement</button>
+                                    <p id="REBONDISSEMENTResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('RÉSULTAT_DE_FOUILLE')">Résultat de fouille</button>
+                                    <p id="RÉSULTAT_DE_FOUILLEResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('ODEUR')">Odeur</button>
+                                    <p id="ODEURResult"></p>
+                                  </div>
+                                </div>
+                                
+                                <!-- Douzième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('SONS')">Son</button>
+                                    <p id="SONSResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('EFFET_DE_SORT')">Effet de sort</button>
+                                    <p id="EFFET_DE_SORTResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_VAISSEAU_SPATIAL')">Vaisseau Spatial</button>
+                                    <p id="DESCRIPTEUR_VAISSEAU_SPATIALResult"></p>
+                                  </div>
+                                </div>
+                                
+                                <!-- Treizième ligne -->
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_TERRAIN')">Terrain</button>
+                                    <p id="DESCRIPTEUR_TERRAINResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="rollTable('DESCRIPTEUR_MORT_VIVANT')">Mort Vivant</button>
+                                    <p id="DESCRIPTEUR_MORT_VIVANTResult"></p>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <!-- Pour équilibrer, on peut laisser vide ou ajouter un espace -->
+                                  </div>
+                                </div>
+                                
+                              </div>
+                              
                         </div>
 
                         <!-- Tables Personnelles -->
@@ -665,7 +758,7 @@
 <div class="tab-pane fade" id="players" role="tabpanel" aria-labelledby="players-tab">
     <div class="card mb-3">
         <div class="card-body">
-            <h2 class="text-center">Gestion des Personnages 🧙‍♂️</h2>
+            <h2 class="text-center">Gestion des Personnages</h2>
 
             <!-- Formulaire pour ajouter un PJ -->
             <form action="/add_player" method="post" class="mb-3">
@@ -921,74 +1014,21 @@
 
     // Tirage dans les tables aléatoires
     function rollTable(tableName) {
-        fetch("/roll_table?table=" + tableName)
-        .then(response => response.json())
-        .then(data => {
-            if(tableName === "random_event_focus"){
-                document.getElementById("randomEventFocusResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "meaning_actions"){
-                document.getElementById("meaningActionsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "meaning_descriptors"){
-                document.getElementById("meaningDescriptorsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "character_elements"){
-                document.getElementById("meaningcharacterResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "object_elements"){
-                document.getElementById("object_elementsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_CRÉATURE"){
-                document.getElementById("descripteursCreatureResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "MESSAGE_CRYPTIQUE"){
-                document.getElementById("messageCryptiqueResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "MALEDICTIONS"){
-                document.getElementById("maledictionsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_DOMICILE"){
-                document.getElementById("descripteursDomicileResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_DONJON"){
-                document.getElementById("descripteursDonjonResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "PIÈGES_DONJON"){
-                document.getElementById("piegesDonjonResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_FORÊT"){
-                document.getElementById("descripteursForetResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DIEUX"){
-                document.getElementById("dieuxResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "LÉGENDES"){
-                document.getElementById("legendesResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "EMPLACEMENTS"){
-                document.getElementById("emplacementsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_OBJET_MAGIQUE"){
-                document.getElementById("descripteursObjetMagiqueResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_MUTATION"){
-                document.getElementById("descripteursMutationResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "NOMS"){
-                document.getElementById("nomsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "MAISON_NOBLE"){
-                document.getElementById("maisonNobleResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "OBJETS"){
-                document.getElementById("objetsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "REBONDISSEMENTS"){
-                document.getElementById("rebondissementsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "POUVOIRS"){
-                document.getElementById("pouvoirsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "RÉSULTATS_FOUILLE"){
-                document.getElementById("resultatsFouilleResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "ODEURS"){
-                document.getElementById("odeursResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "SONS"){
-                document.getElementById("sonsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "EFFETS_SORTS"){
-                document.getElementById("effetsSortsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_VAISSEAU"){
-                document.getElementById("descripteursVaisseauResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_TERRAIN"){
-                document.getElementById("descripteursTerrainResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "DESCRIPTEURS_MORTS_VIVANTS"){
-                document.getElementById("descripteursMortsVivantsResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "VISIONS_RÊVES"){
-                document.getElementById("visionsRevesResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            } else if(tableName === "scene_adjustment"){
-                document.getElementById("sceneAdjustmentResult").innerText = "Jet : " + data.roll + " → " + data.result;
-            }
-        });
-    }
+        console.log(tableName);
+    fetch("/roll_table?table=" + tableName)
+    .then(response => response.json())
+    .then(data => {
+        // Construire l'ID de l'élément de résultat à partir de tableName
+        let elementId = tableName + "Result";
+        let resultElement = document.getElementById(elementId);
+        if (resultElement) {
+            resultElement.innerText = "Jet : " + data.roll + " → " + data.result;
+        } else {
+            console.error("Aucun élément avec l'ID :", elementId);
+        }
+    })
+    .catch(error => console.error("Erreur lors du tirage de la table :", error));
+}
     
     function toggleItems(inventoryId) {
         let itemsDiv = document.getElementById("items-" + inventoryId);
