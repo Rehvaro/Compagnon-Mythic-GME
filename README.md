@@ -1,19 +1,33 @@
 # Compagnon Mythic GME
 
-EDIT : D'autres petites fonctions (PJ, Quantités dans les inventaires, etc) ont été ajoutées mais je n'ai pas encore mis a jour ce README et les screenshots
+Un petit outil codé en quelques heures pour m'assister dans l'utilisation du Mythic Game Master Emulator
 
-Un petit outil codé en un après midi pour m'assister dans l'utilisation du Mythic Game Master Emulator
+Déjà les fonctions de bases, on peut gérer le facteur de Chaos, et poser des questions à l'oracle Mythic
+![image](https://github.com/user-attachments/assets/174bebc9-c756-4d25-86f7-8caf7dac6558)
 
-On peut poser ses questions et gérer son facteur de chaos
-![Screenshot 2025-02-15 at 20-41-08 Compagnon Mythic GME](https://github.com/user-attachments/assets/2fa2c950-9fa5-45f8-9720-0850698f4e89)
+On peut lister ses objectifs, PNJ rencontrés, scènes (avec jet de Chaos)
+![image](https://github.com/user-attachments/assets/4ead574b-cd36-40fd-96fa-7578f6498c31)
+![image](https://github.com/user-attachments/assets/68017041-e729-4cf0-94f4-7c212a632728)
+![image](https://github.com/user-attachments/assets/b21629d1-30b3-4ea4-a02c-54935ce7aaf9)
 
-On peut gérer notre liste d'objectifs, de PNJ importants (avec tirage aléatoire pour en recroiser certains), de scènes...
-![Screenshot 2025-02-15 at 20-42-19 Compagnon Mythic GME](https://github.com/user-attachments/assets/deee6689-1e19-4135-99dc-c77afe4c46a8)![Screenshot 2025-02-15 at 20-42-30 Compagnon Mythic GME](https://github.com/user-attachments/assets/fa122779-0f68-4fcd-bf98-5051bfb231a5)![Screenshot 2025-02-15 at 20-42-47 Compagnon Mythic GME](https://github.com/user-attachments/assets/0170eac5-aaa7-41c2-9fab-57a4d5b4cf96)
+Il y a une gestion basique des PJ et de leur description/inventaire
+![image](https://github.com/user-attachments/assets/1db1e5b0-3102-4e9f-a61e-08a6e5ff2bf2)
 
-Un petit lanceur de d100 basique, toutes les tables aléatoires inclues dans Mythic, et une page de journal, exportable en Markdown
-![Screenshot 2025-02-15 at 20-44-38 Compagnon Mythic GME](https://github.com/user-attachments/assets/3e640bdb-4cf1-4985-a61e-cb3f229a5f0d)![Screenshot 2025-02-15 at 20-44-49 Compagnon Mythic GME](https://github.com/user-attachments/assets/513e7102-9a46-4e12-ad70-a13cc5b8ce84)![Screenshot 2025-02-15 at 20-45-30 Compagnon Mythic GME](https://github.com/user-attachments/assets/5527e657-eb8a-4cf9-94e0-131de754910a)
+Il y a quelques tables aléatoires, je n'ai pas mises celles du Mythic GME pour des raisons de droit d'auteur. Et on peut ajouter ses propres tables.
+![image](https://github.com/user-attachments/assets/912fcfa6-66e4-4052-ab45-a6cc9a59a4ce)
+![image](https://github.com/user-attachments/assets/b8be543b-dfed-44e3-b034-d4af044beef2)
+
+Un petit lanceur de dés simple
+![image](https://github.com/user-attachments/assets/9a8f1c4d-bf04-407d-afd9-85205e2a91cd)
+
+Une gestion d'inventaire basique
+![image](https://github.com/user-attachments/assets/86c702da-665b-44b7-bc9d-bc42e90007d2)
+
+Et un journal très basique
+![image](https://github.com/user-attachments/assets/f023a9a3-7676-4b9b-bf32-a029d169bdfc)
 
 Et ca mériterais un peu de fignolage, de corrections visuelles, orthographiques, des trad plus exactes, etc.
+Surtout que je ne suis pas programmeur professionel, alors beaucoup de code notamment du backend pourrait être mieux foutu.
 
 Pour l'utiliser :
 
