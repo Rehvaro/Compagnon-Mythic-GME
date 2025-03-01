@@ -4,6 +4,8 @@ import random
 import json
 from datetime import datetime
 from flask import Response
+from openai import OpenAI
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mythic_gme.db'
@@ -86,9 +88,15 @@ class DiceRollHistory(db.Model):
     roll = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
+class OpenAIConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    api_key = db.Column(db.String(200), nullable=True)
 
 with app.app_context():
     db.create_all()
+    if not OpenAIConfig.query.first():
+        db.session.add(OpenAIConfig(api_key=""))
+        db.session.commit()
 
 # Fonction Fate Check selon la règle du PDF pour l'événement aléatoire
 def fate_check(odds, chaos_factor):
@@ -163,6 +171,8 @@ def index():
 
     players = PlayerCharacter.query.all()
 
+    openai_config = OpenAIConfig.query.first()
+
     return render_template("index.html", 
                        chaos_factor=game_state.chaos_factor, 
                        fate_questions=fate_questions, 
@@ -176,7 +186,8 @@ def index():
                        current_fate_page=fate_page,
                        inventories=inventories,
                        players=players,
-                       custom_tables_json=json.dumps([{ "id": t.id, "name": t.name, "values": t.values } for t in custom_tables]))
+                       custom_tables_json=json.dumps([{ "id": t.id, "name": t.name, "values": t.values } for t in custom_tables]),
+                       openai_key=openai_config.api_key)
 
 
 @app.route("/ask_fate", methods=["POST"])
@@ -404,7 +415,92 @@ def update_item_quantity(item_id, operation):
     db.session.commit()
     return jsonify({"success": True, "new_quantity": item.quantity, "inventory_id": item.inventory_id})
 
+@app.route("/update_openai_key", methods=["POST"])
+def update_openai_key():
+    api_key = request.form.get("api_key")
+    config = OpenAIConfig.query.first()
+    if config:
+        config.api_key = api_key
+    else:
+        config = OpenAIConfig(api_key=api_key)
+        db.session.add(config)
+    db.session.commit()
+    flash("Clé OpenAI mise à jour avec succès.", "success")
+    return redirect(url_for("index") + "#options")
 
+@app.route("/transcribe_audio", methods=["POST"])
+def transcribe_audio():
+    config = OpenAIConfig.query.first()
+    if not config or not config.api_key:
+        return jsonify({"error": "Clé API OpenAI non configurée."}), 400
+
+    audio_file = request.files["audio"]
+    audio_blob = audio_file.read()  # Read the file content as bytes
+    audio_file_path = "temp_audio.wav"
+    
+    # Save the audio blob to a temporary file
+    with open(audio_file_path, "wb") as f:
+        f.write(audio_blob)
+
+    client = OpenAI(api_key=config.api_key)
+    with open(audio_file_path, "rb") as f:
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=f,
+            response_format="json"
+        )
+    
+    # Optionally, remove the temporary file after processing
+    os.remove(audio_file_path)
+
+    # Access the transcription text directly
+    transcription_text = transcription.text if hasattr(transcription, 'text') else ""
+    
+    return jsonify({"transcription": transcription_text})
+
+@app.route("/reformat_journal", methods=["POST"])
+def reformat_journal():
+    text = request.form.get("journal_text")
+    config = OpenAIConfig.query.first()
+    
+    if not config or not config.api_key:
+        return jsonify({"error": "Aucune clé OpenAI configurée."}), 400
+
+    client = OpenAI(api_key=config.api_key)
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content":
+                 """
+                 Tu es un assistant de jeu de rôle spécialisé dans la reformulation de résumés de sessions de JDR. 
+                 Réalise un document résumant cette scène de JDR Solo en respectant ce format :
+                 ### Résumé
+                 Ici tu met le résumé naré de la scène
+                 ### Résumé en liste à puce
+                 Ici tu fait un résumé chronologique des elements importants du recit sous forme de listes a puces
+                 ### Lieux
+                 Ici tu liste les lieux dont parle la session et ce qui en est dit
+                 ### Personnages 
+                 Ici tu met les personnages sont parle la session, avec ce qui est dit a leur sujet
+                 ### Objets
+                 Ici tu met les objets importants du recit tel que décris 
+                 ### Evolution
+                 Ici tu décris l'évolution du lore, cad tel qu'il était avant la scène, comparé a après la scène
+                 """ 
+                },
+                {"role": "user", "content": text}
+            ],
+            temperature=0.7
+        )
+        formatted_text = response.choices[0].message.content
+        
+        return jsonify({"formatted_text": formatted_text})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 # -
 # Tables aléatoires du PDF
 

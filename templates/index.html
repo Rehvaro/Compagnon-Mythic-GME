@@ -1,3 +1,4 @@
+<!-- Start of Selection -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,6 +13,8 @@
         .delete-btn:hover { text-decoration: underline; }
         .highlight { background-color: #d1e7dd; padding: 10px; border-radius: 5px; }
         .collapsible-content { display: none; }
+        .formatted-result { font-size: 0.9em; max-height: 150px; overflow-y: auto; background-color: #e9ecef; padding: 10px; border-radius: 5px; }
+        .status-text { font-size: 0.9em; color: #6c757d; }
     </style>
 </head>
 <body>
@@ -67,6 +70,11 @@
         <li class="nav-item">
             <button class="nav-link" id="journal-tab" data-bs-toggle="tab" data-bs-target="#journal" type="button" role="tab">
                 Journal 📓
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="options-tab" data-bs-toggle="tab" data-bs-target="#options" type="button" role="tab">
+                Options ⚙️
             </button>
         </li>
     </ul>
@@ -644,10 +652,17 @@
                     <!-- Formulaire pour ajouter une entrée -->
                     <form action="/add_journal_entry" method="post">
                         <div class="mb-2">
-                            <textarea name="content" class="form-control" rows="3" placeholder="Écris une nouvelle entrée..." required></textarea>
+                            <textarea id="journalText" name="content" class="form-control" rows="3" placeholder="Écris une nouvelle entrée..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Ajouter</button>
                     </form>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button id="startRecording" class="btn btn-secondary">🎤 Dictée</button>
+                        <button id="formatJournal" class="btn btn-primary">📝 Résumer avec OpenAI</button>
+                        <button id="useSummary" class="btn btn-success">Utiliser le Résumé</button>
+                    </div>
+                    <p id="recordingStatus" class="status-text mt-2"></p>
+                    <div id="formattedResult" class="formatted-result mt-3"></div>
                 </div>
             </div>
 
@@ -754,94 +769,105 @@
         </div>
 
         <!-- Onglet Personnages -->
-<!-- Onglet Personnages -->
-<div class="tab-pane fade" id="players" role="tabpanel" aria-labelledby="players-tab">
-    <div class="card mb-3">
-        <div class="card-body">
-            <h2 class="text-center">Gestion des Personnages</h2>
+        <div class="tab-pane fade" id="players" role="tabpanel" aria-labelledby="players-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="text-center">Gestion des Personnages</h2>
 
-            <!-- Formulaire pour ajouter un PJ -->
-            <form action="/add_player" method="post" class="mb-3">
-                <div class="input-group">
-                    <input type="text" name="name" class="form-control" placeholder="Nom du personnage" required>
-                    <input type="text" name="description" class="form-control" placeholder="Description">
-                    <button type="submit" class="btn btn-primary">Ajouter</button>
-                </div>
-            </form>
-
-            <!-- Liste des personnages -->
-            <ul class="list-group">
-                {% for player in players %}
-                <li class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong>{{ player.name }}</strong>
-                        <div>
-                            <button class="btn btn-secondary btn-sm me-2" onclick="toggleAttributes({{ player.id }})">📋 Attributs</button>
-                            <button class="btn btn-secondary btn-sm me-2" onclick="toggleDescEdit({{ player.id }})">✏️ Modifier Description</button>
-                            <a href="{{ url_for('delete_player', player_id=player.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
+                    <!-- Formulaire pour ajouter un PJ -->
+                    <form action="/add_player" method="post" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="name" class="form-control" placeholder="Nom du personnage" required>
+                            <input type="text" name="description" class="form-control" placeholder="Description">
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
                         </div>
-                    </div>
-
-                    <!-- Zone de description en mode lecture -->
-                    <div id="desc-view-{{ player.id }}" class="mt-2">
-                        {% if player.description %}
-                        {% set lines = player.description.split('\n') %}
-                        <span id="desc-short-{{ player.id }}" style="white-space: pre-line;">{{ lines[0] }}</span>
-                        {% if lines|length > 1 %}
-                            <span id="desc-full-{{ player.id }}" class="d-none" style="white-space: pre-line;"><br>{{ lines[1:] | join('\n') }}</span>
-                            <a href="javascript:void(0)" id="toggleDescLink-{{ player.id }}" onclick="toggleFullDesc({{ player.id }})"> …Voir plus</a>
-                        {% endif %}
-                        {% else %}
-                        Aucune description.
-                        {% endif %}
-                    </div>
-  
-                    <!-- Zone de description en mode édition (cachée par défaut) -->
-                    <form id="desc-edit-{{ player.id }}" class="d-none" action="/edit_player_description/{{ player.id }}" method="post">
-                        <textarea name="description" class="form-control" rows="4" id="desc-textarea-{{ player.id }}">{{ player.description }}</textarea>
-                        <button type="submit" class="btn btn-success btn-sm mt-2">💾 Enregistrer</button>
-                        <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="toggleDescEdit({{ player.id }})">❌ Annuler</button>
                     </form>
 
-                    <!-- Zone d'attributs (affichage et gestion) -->
-                    <div id="attributes-{{ player.id }}" class="mt-2 d-none">
-                        <ul class="list-group">
-                            {% for attr in player.attributes %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <!-- Liste des personnages -->
+                    <ul class="list-group">
+                        {% for player in players %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>{{ player.name }}</strong>
                                 <div>
-                                    <strong>{{ attr.attribute_name }}</strong> :
-                                    <span id="attr-value-{{ attr.id }}">{{ attr.attribute_value }}</span>
+                                    <button class="btn btn-secondary btn-sm me-2" onclick="toggleAttributes({{ player.id }})">📋 Attributs</button>
+                                    <button class="btn btn-secondary btn-sm me-2" onclick="toggleDescEdit({{ player.id }})">✏️ Modifier Description</button>
+                                    <a href="{{ url_for('delete_player', player_id=player.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
                                 </div>
-                                <div>
-                                    {% if attr.is_numeric %}
-                                        <button class="btn btn-danger btn-sm me-1" onclick="updateAttribute({{ attr.id }}, 'decrease')">-</button>
-                                        <button class="btn btn-success btn-sm me-2" onclick="updateAttribute({{ attr.id }}, 'increase')">+</button>
-                                    {% endif %}
-                                    <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm">❌</a>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        <!-- Formulaire pour ajouter un attribut -->
-                        <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2" onsubmit="return validateAttributeForm({{ player.id }})">
-                            <div class="input-group">
-                                <input type="text" name="attribute_name" class="form-control" placeholder="Nom de l'attribut" required>
-                                <input type="text" name="attribute_value" id="attribute_value_{{ player.id }}" class="form-control" placeholder="Valeur" required>
-                                <span class="input-group-text">
-                                    <input type="checkbox" name="is_numeric" id="is_numeric_{{ player.id }}" onchange="toggleNumericValidation({{ player.id }})">
-                                    <label for="is_numeric_{{ player.id }}" class="mb-0 ms-1">Numérique</label>
-                                </span>
-                                <button type="submit" class="btn btn-success">➕ Ajouter</button>
                             </div>
-                            <p id="error-msg-{{ player.id }}" class="text-danger mt-1 d-none">⚠️ La valeur doit être un nombre si "Numérique" est coché.</p>
-                        </form>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+
+                            <!-- Zone de description en mode lecture -->
+                            <div id="desc-view-{{ player.id }}" class="mt-2">
+                                {% if player.description %}
+                                {% set lines = player.description.split('\n') %}
+                                <span id="desc-short-{{ player.id }}" style="white-space: pre-line;">{{ lines[0] }}</span>
+                                {% if lines|length > 1 %}
+                                    <span id="desc-full-{{ player.id }}" class="d-none" style="white-space: pre-line;"><br>{{ lines[1:] | join('\n') }}</span>
+                                    <a href="javascript:void(0)" id="toggleDescLink-{{ player.id }}" onclick="toggleFullDesc({{ player.id }})"> …Voir plus</a>
+                                {% endif %}
+                                {% else %}
+                                Aucune description.
+                                {% endif %}
+                            </div>
+        
+                            <!-- Zone de description en mode édition (cachée par défaut) -->
+                            <form id="desc-edit-{{ player.id }}" class="d-none" action="/edit_player_description/{{ player.id }}" method="post">
+                                <textarea name="description" class="form-control" rows="4" id="desc-textarea-{{ player.id }}">{{ player.description }}</textarea>
+                                <button type="submit" class="btn btn-success btn-sm mt-2">💾 Enregistrer</button>
+                                <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="toggleDescEdit({{ player.id }})">❌ Annuler</button>
+                            </form>
+
+                            <!-- Zone d'attributs (affichage et gestion) -->
+                            <div id="attributes-{{ player.id }}" class="mt-2 d-none">
+                                <ul class="list-group">
+                                    {% for attr in player.attributes %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ attr.attribute_name }}</strong> :
+                                            <span id="attr-value-{{ attr.id }}">{{ attr.attribute_value }}</span>
+                                        </div>
+                                        <div>
+                                            {% if attr.is_numeric %}
+                                                <button class="btn btn-danger btn-sm me-1" onclick="updateAttribute({{ attr.id }}, 'decrease')">-</button>
+                                                <button class="btn btn-success btn-sm me-2" onclick="updateAttribute({{ attr.id }}, 'increase')">+</button>
+                                            {% endif %}
+                                            <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm">❌</a>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                <!-- Formulaire pour ajouter un attribut -->
+                                <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2" onsubmit="return validateAttributeForm({{ player.id }})">
+                                    <div class="input-group">
+                                        <input type="text" name="attribute_name" class="form-control" placeholder="Nom de l'attribut" required>
+                                        <input type="text" name="attribute_value" id="attribute_value_{{ player.id }}" class="form-control" placeholder="Valeur" required>
+                                        <span class="input-group-text">
+                                            <input type="checkbox" name="is_numeric" id="is_numeric_{{ player.id }}" onchange="toggleNumericValidation({{ player.id }})">
+                                            <label for="is_numeric_{{ player.id }}" class="mb-0 ms-1">Numérique</label>
+                                        </span>
+                                        <button type="submit" class="btn btn-success">➕ Ajouter</button>
+                                    </div>
+                                    <p id="error-msg-{{ player.id }}" class="text-danger mt-1 d-none">⚠️ La valeur doit être un nombre si "Numérique" est coché.</p>
+                                </form>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+        <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="text-center">Options</h2>
+                    <form action="/update_openai_key" method="post">
+                        <label for="api_key" class="form-label">Clé API OpenAI</label>
+                        <input type="password" id="api_key" name="api_key" class="form-control" value="{{ openai_key }}" required>
+                        <button type="submit" class="btn btn-primary mt-2">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
 <!-- Fin de la section Onglets -->
           
@@ -1229,6 +1255,100 @@
 
     // Charger l'historique au chargement de la page
     document.addEventListener("DOMContentLoaded", loadDiceHistory);
+
+    // Code Dictée
+    let mediaRecorder;
+    let audioChunks = [];
+
+    document.getElementById("startRecording").addEventListener("click", async () => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Votre navigateur ne supporte pas l'enregistrement audio.");
+            return;
+        }
+
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+            return;
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = event => {
+            audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            const formData = new FormData();
+            formData.append("audio", audioBlob);
+
+            console.log(audioBlob);
+            document.getElementById("recordingStatus").innerText = "Analyse en cours...";
+            document.getElementById("startRecording").disabled = true; // Disable button
+
+            fetch("/transcribe_audio", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("recordingStatus").innerText = "Transcription terminée.";
+                document.querySelector("textarea[name='content']").value += data.transcription;
+            })
+            .catch(() => {
+                document.getElementById("recordingStatus").innerText = "Erreur lors de la transcription.";
+            })
+            .finally(() => {
+                audioChunks = []; // Clear the audio chunks after processing
+                document.getElementById("startRecording").disabled = false; // Re-enable button
+            });
+        };
+
+        mediaRecorder.start();
+        document.getElementById("recordingStatus").innerText = "Enregistrement en cours... Cliquez à nouveau pour arrêter.";
+    });
+
+    document.getElementById("formatJournal").addEventListener("click", function() {
+        let journalText = document.getElementById("journalText").value;
+
+        if (journalText.trim() === "") {
+            alert("Le champ du journal est vide.");
+            return;
+        }
+
+        document.getElementById("recordingStatus").innerText = "Génération du résumé en cours...";
+        document.getElementById("formatJournal").disabled = true; // Disable button
+
+        fetch("/reformat_journal", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "journal_text=" + encodeURIComponent(journalText)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert("Erreur : " + data.error);
+            } else {
+                document.getElementById("formattedResult").innerText = data.formatted_text;
+                document.getElementById("recordingStatus").innerText = "Résumé généré.";
+            }
+        })
+        .catch(error => console.error("Erreur lors de la reformulation du journal :", error))
+        .finally(() => {
+            document.getElementById("formatJournal").disabled = false; // Re-enable button
+        });
+    });
+
+    document.getElementById("useSummary").addEventListener("click", function() {
+        const summaryText = document.getElementById("formattedResult").innerText;
+        if (summaryText.trim() !== "") {
+            document.getElementById("journalText").value = summaryText;
+        }
+    });
 </script>
 </body>
 </html>
+<!-- End of Selection -->
