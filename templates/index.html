@@ -91,7 +91,7 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h2>Poser une Question à l'Oracle</h2>
-                    <form action="/ask_fate" method="post">
+                    <form id="askFateForm">
                         <div class="mb-3">
                             <input type="text" name="question" class="form-control" placeholder="Votre question" required>
                         </div>
@@ -134,7 +134,7 @@
                                 <label class="form-check-label" for="odds9">Impossible (10%)</label>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Poser la question</button>
+                        <button type="button" class="btn btn-primary" onclick="askFate()">Poser la question</button>
                     </form>
                 </div>
             </div>
@@ -174,7 +174,7 @@
                                 Non Exceptionnel ≥ {{ fq.exc_no_threshold }},
                                 (Jet : {{ fq.roll }})
                             </small>
-                            <a href="{{ url_for('delete_fate', question_id=fq.id) }}" class="float-end delete-btn">Supprimer</a>
+                            <a href="javascript:void(0)" onclick="deleteFate({{ fq.id }})" class="float-end delete-btn">Supprimer</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -201,10 +201,10 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h2>Ajouter un objectif</h2>
-                    <form action="/add_objective" method="post">
+                    <form id="addObjectiveForm">
                         <div class="input-group">
                             <input type="text" name="description" class="form-control" placeholder="Nouvel objectif" required>
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                            <button type="button" class="btn btn-primary" onclick="addObjective()">Ajouter</button>
                         </div>
                     </form>
                 </div>
@@ -216,7 +216,7 @@
                         {% for obj in objectives %}
                         <li class="list-group-item">
                             {{ obj.description }}
-                            <a href="{{ url_for('delete_objective', objective_id=obj.id) }}" class="float-end delete-btn">Supprimer</a>
+                            <a href="javascript:void(0)" onclick="deleteObjective({{ obj.id }})" class="float-end delete-btn">Supprimer</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -229,14 +229,14 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h2>Ajouter un PNJ</h2>
-                    <form action="/add_npc" method="post">
+                    <form id="addNpcForm">
                         <div class="mb-3">
                             <input type="text" name="name" class="form-control" placeholder="Nom du PNJ" required>
                         </div>
                         <div class="mb-3">
                             <input type="text" name="description" class="form-control" placeholder="Description">
                         </div>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                        <button type="button" class="btn btn-primary" onclick="addNpc()">Ajouter</button>
                     </form>
                 </div>
             </div>
@@ -247,7 +247,7 @@
                         {% for npc in npcs %}
                         <li class="list-group-item">
                             <strong>{{ npc.name }}</strong> : {{ npc.description }}
-                            <a href="{{ url_for('delete_npc', npc_id=npc.id) }}" class="float-end delete-btn">Supprimer</a>
+                            <a href="javascript:void(0)" onclick="deleteNpc({{ npc.id }})" class="float-end delete-btn">Supprimer</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -267,7 +267,7 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h2>Ajouter une Scène</h2>
-                    <form action="/add_scene" method="post">
+                    <form id="addSceneForm">
                         <div class="mb-3">
                             <input type="text" name="title" class="form-control" placeholder="Titre de la scène" required>
                         </div>
@@ -282,7 +282,7 @@
                                 <option value="interrompue">Interrompue</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Ajouter la scène</button>
+                        <button type="button" class="btn btn-primary" onclick="addScene()">Ajouter la scène</button>
                     </form>
                 </div>
             </div>
@@ -304,7 +304,7 @@
                         {% for scene in scenes %}
                         <li class="list-group-item">
                             <strong>{{ scene.title }}</strong> [{{ scene.status }}] : {{ scene.description }}
-                            <a href="{{ url_for('delete_scene', scene_id=scene.id) }}" class="float-end delete-btn">Supprimer</a>
+                            <a href="javascript:void(0)" onclick="deleteScene({{ scene.id }})" class="float-end delete-btn">Supprimer</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -586,7 +586,7 @@
                                         <div class="d-flex justify-content-end">
                                             <button class="btn btn-secondary btn-sm me-2" onclick="rollCustomTable('{{ table.id }}')">Lancer</button>
                                             <button class="btn btn-warning btn-sm me-2" onclick="openEditModal('{{ table.id }}')">Éditer</button>
-                                            <a href="{{ url_for('delete_custom_table', table_id=table.id) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                                            <a href="javascript:void(0)" onclick="deleteCustomTable({{ table.id }})" class="btn btn-danger btn-sm">Supprimer</a>
                                         </div>
                                         <!-- Ajout d’un conteneur pour afficher le résultat -->
                                         <p id="customTableResult-{{ table.id }}" class="mt-2 text-center fw-bold"></p>
@@ -599,14 +599,14 @@
                             <!-- Formulaire d'ajout -->
                             <div class="mt-4">
                                 <h5>Ajouter une Table Personnelle</h5>
-                                <form action="/add_custom_table" method="post">
+                                <form id="addCustomTableForm">
                                     <div class="mb-2">
                                         <input type="text" name="customTableName" id="customTableName" class="form-control" placeholder="Nom de la table" required>
                                     </div>
                                     <div class="mb-2">
                                         <textarea name="customTableValues" id="customTableValues" class="form-control" rows="3" placeholder="Liste des valeurs, une par ligne" required></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-success">Ajouter</button>
+                                    <button type="button" class="btn btn-success" onclick="addCustomTable()">Ajouter</button>
                                 </form>
                             </div>
                         </div>
@@ -649,11 +649,11 @@
                 <div class="card-body">
                     <h2 class="text-center">Journal</h2>
                     <!-- Formulaire pour ajouter une entrée -->
-                    <form action="/add_journal_entry" method="post">
+                    <form id="addJournalEntryForm">
                         <div class="mb-2">
                             <textarea id="journalText" name="content" class="form-control" rows="3" placeholder="Écris une nouvelle entrée..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                        <button type="button" class="btn btn-primary" onclick="addJournalEntry()">Ajouter</button>
                     </form>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <button id="startRecording" class="btn btn-secondary">🎤 Dictée</button>
@@ -680,7 +680,7 @@
                                 {% if entry.content.split('\n')|length > 1 %}
                                 <a href="javascript:void(0)" id="toggle-link-{{ entry.id }}" onclick="toggleEntryContent({{ entry.id }})">Voir plus</a>
                                 {% endif %}
-                                <a href="{{ url_for('delete_journal_entry', entry_id=entry.id) }}" class="text-danger float-end">Supprimer</a>
+                                <a href="javascript:void(0)" onclick="deleteJournalEntry({{ entry.id }})" class="text-danger float-end">Supprimer</a>
                             </li>
                             {% endfor %}
                         </ul>
@@ -715,10 +715,10 @@
                     <h2 class="text-center">Gestion des Inventaires</h2>
 
                     <!-- Formulaire pour ajouter un nouvel inventaire -->
-                    <form action="/add_inventory" method="post" class="mb-3">
+                    <form id="addInventoryForm" class="mb-3">
                         <div class="input-group">
                             <input type="text" name="title" class="form-control" placeholder="Nom de l'inventaire" required>
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                            <button type="button" class="btn btn-primary" onclick="addInventory()">Ajouter</button>
                         </div>
                     </form>
 
@@ -730,7 +730,7 @@
                                 <strong>{{ inventory.title }}</strong>
                                 <div>
                                     <button class="btn btn-secondary btn-sm me-2" onclick="toggleItems({{ inventory.id }})">📝 Voir</button>
-                                    <a href="{{ url_for('delete_inventory', inventory_id=inventory.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
+                                    <a href="javascript:void(0)" onclick="deleteInventory({{ inventory.id }})" class="btn btn-danger btn-sm">❌ Supprimer</a>
                                 </div>
                             </div>
 
@@ -744,19 +744,19 @@
                                         <div class="d-flex justify-content-end">
                                             <button class="btn btn-danger btn-sm me-1" onclick="updateItemQuantity({{ item.id }}, 'decrease')">-</button>
                                             <button class="btn btn-success btn-sm me-2" onclick="updateItemQuantity({{ item.id }}, 'increase')">+</button>
-                                            <a href="{{ url_for('delete_inventory_item', item_id=item.id) }}" class="btn btn-danger btn-sm">❌</a>
+                                            <a href="javascript:void(0)" onclick="deleteInventoryItem({{ item.id }})" class="btn btn-danger btn-sm">❌</a>
                                         </div>
                                     </li>
                                     {% endfor %}
                                 </ul>
 
                                 <!-- Formulaire pour ajouter un élément -->
-                                <form action="/add_inventory_item/{{ inventory.id }}" method="post" class="mt-2">
+                                <form id="addInventoryItemForm-{{ inventory.id }}" class="mt-2">
                                     <div class="input-group">
                                         <input type="text" name="name" class="form-control" placeholder="Nom de l'objet" required>
                                         <input type="text" name="description" class="form-control" placeholder="Description">
                                         <input type="number" name="quantity" class="form-control" placeholder="Quantité" min="1" value="1" required>
-                                        <button type="submit" class="btn btn-success">➕ Ajouter</button>
+                                        <button type="button" class="btn btn-success" onclick="addInventoryItem({{ inventory.id }})">➕ Ajouter</button>
                                     </div>
                                 </form>
                             </div>
@@ -774,11 +774,11 @@
                     <h2 class="text-center">Gestion des Personnages</h2>
 
                     <!-- Formulaire pour ajouter un PJ -->
-                    <form action="/add_player" method="post" class="mb-3">
+                    <form id="addPlayerForm" class="mb-3">
                         <div class="input-group">
                             <input type="text" name="name" class="form-control" placeholder="Nom du personnage" required>
                             <input type="text" name="description" class="form-control" placeholder="Description">
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                            <button type="button" class="btn btn-primary" onclick="addPlayer()">Ajouter</button>
                         </div>
                     </form>
 
@@ -791,7 +791,7 @@
                                 <div>
                                     <button class="btn btn-secondary btn-sm me-2" onclick="toggleAttributes({{ player.id }})">📋 Attributs</button>
                                     <button class="btn btn-secondary btn-sm me-2" onclick="toggleDescEdit({{ player.id }})">✏️ Modifier Description</button>
-                                    <a href="{{ url_for('delete_player', player_id=player.id) }}" class="btn btn-danger btn-sm">❌ Supprimer</a>
+                                    <a href="javascript:void(0)" onclick="deletePlayer({{ player.id }})" class="btn btn-danger btn-sm">❌ Supprimer</a>
                                 </div>
                             </div>
 
@@ -810,11 +810,11 @@
                             </div>
         
                             <!-- Zone de description en mode édition (cachée par défaut) -->
-                            <form id="desc-edit-{{ player.id }}" class="d-none" action="/edit_player_description/{{ player.id }}" method="post">
+                            <div id="desc-edit-{{ player.id }}" class="d-none">
                                 <textarea name="description" class="form-control" rows="4" id="desc-textarea-{{ player.id }}">{{ player.description }}</textarea>
-                                <button type="submit" class="btn btn-success btn-sm mt-2">💾 Enregistrer</button>
+                                <button type="button" class="btn btn-success btn-sm mt-2" onclick="editPlayerDescription({{ player.id }})">💾 Enregistrer</button>
                                 <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="toggleDescEdit({{ player.id }})">❌ Annuler</button>
-                            </form>
+                            </div>
 
                             <!-- Zone d'attributs (affichage et gestion) -->
                             <div id="attributes-{{ player.id }}" class="mt-2 d-none">
@@ -830,13 +830,13 @@
                                                 <button class="btn btn-danger btn-sm me-1" onclick="updateAttribute({{ attr.id }}, 'decrease')">-</button>
                                                 <button class="btn btn-success btn-sm me-2" onclick="updateAttribute({{ attr.id }}, 'increase')">+</button>
                                             {% endif %}
-                                            <a href="{{ url_for('delete_player_attribute', attribute_id=attr.id) }}" class="btn btn-danger btn-sm">❌</a>
+                                            <a href="javascript:void(0)" onclick="deletePlayerAttribute({{ attr.id }})" class="btn btn-danger btn-sm">❌</a>
                                         </div>
                                     </li>
                                     {% endfor %}
                                 </ul>
                                 <!-- Formulaire pour ajouter un attribut -->
-                                <form action="/add_player_attribute/{{ player.id }}" method="post" class="mt-2" onsubmit="return validateAttributeForm({{ player.id }})">
+                                <form id="addPlayerAttributeForm-{{ player.id }}" class="mt-2" onsubmit="return validateAttributeForm({{ player.id }})">
                                     <div class="input-group">
                                         <input type="text" name="attribute_name" class="form-control" placeholder="Nom de l'attribut" required>
                                         <input type="text" name="attribute_value" id="attribute_value_{{ player.id }}" class="form-control" placeholder="Valeur" required>
@@ -844,7 +844,7 @@
                                             <input type="checkbox" name="is_numeric" id="is_numeric_{{ player.id }}" onchange="toggleNumericValidation({{ player.id }})">
                                             <label for="is_numeric_{{ player.id }}" class="mb-0 ms-1">Numérique</label>
                                         </span>
-                                        <button type="submit" class="btn btn-success">➕ Ajouter</button>
+                                        <button type="button" class="btn btn-success" onclick="addPlayerAttribute({{ player.id }})">➕ Ajouter</button>
                                     </div>
                                     <p id="error-msg-{{ player.id }}" class="text-danger mt-1 d-none">⚠️ La valeur doit être un nombre si "Numérique" est coché.</p>
                                 </form>
@@ -859,10 +859,10 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h2 class="text-center">Options</h2>
-                    <form action="/update_openai_key" method="post">
+                    <form id="updateOpenAIKeyForm">
                         <label for="api_key" class="form-label">Clé API OpenAI</label>
                         <input type="password" id="api_key" name="api_key" class="form-control" value="{{ openai_key }}" required>
-                        <button type="submit" class="btn btn-primary mt-2">Enregistrer</button>
+                        <button type="button" class="btn btn-primary mt-2" onclick="updateOpenAIKey()">Enregistrer</button>
                     </form>
                 </div>
             </div>
@@ -879,7 +879,7 @@
         // On envoie une requête vers un endpoint qui n'est pas encore défini côté serveur
         // Pour simplifier, nous récupérons les valeurs depuis un objet JavaScript construit à partir des tables sauvegardées.
         // Ici, nous allons utiliser une requête AJAX pour obtenir les valeurs de la table.
-        fetch("/get_custom_table?table_id=" + parseInt(tableId, 10))
+        fetch("./get_custom_table?table_id=" + parseInt(tableId, 10), { method: "POST" })
         .then(response => response.json())
         .then(data => {
         if (data.error) {
@@ -900,18 +900,38 @@
     function openEditModal(tableId) {
         console.log(tableId);
         console.log(customTables);
-    const table = customTables.find(t => t.id === parseInt(tableId, 10));
-    console.log(table);
-    console.log('edit');
-    if (table) {
-        console.log('edittable');
-        document.getElementById("editCustomTableForm").action = "/edit_custom_table/" + table.id;
-        document.getElementById("customTableNameEdit").value = table.name;
-        document.getElementById("customTableValuesEdit").value = table.values.replace(/\\n/g, "\n"); // Rétablir les sauts de ligne
-        const modal = new bootstrap.Modal(document.getElementById("editCustomTableModal"));
-        modal.show();
+        const table = customTables.find(t => t.id === parseInt(tableId, 10));
+        console.log(table);
+        console.log('edit');
+        if (table) {
+            console.log('edittable');
+            document.getElementById("customTableNameEdit").value = table.name;
+            document.getElementById("customTableValuesEdit").value = table.values.replace(/\\n/g, "\n"); // Rétablir les sauts de ligne
+            const modal = new bootstrap.Modal(document.getElementById("editCustomTableModal"));
+            modal.show();
+
+            // Handle form submission and reload the page after editing
+            document.getElementById("editCustomTableForm").onsubmit = function(event) {
+                event.preventDefault(); // Prevent default form submission
+                const formData = new FormData(this);
+                fetch("./edit_custom_table/" + table.id, {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("Table edited successfully");
+                        modal.hide(); // Hide the modal after successful edit
+                        location.reload(); // Reload the page
+                    } else {
+                        console.error("Erreur lors de l'édition de la table.");
+                    }
+                })
+                .catch(error => console.error("Erreur réseau :", error));
+            };
+        }
     }
-}
 
     // Fonction pour afficher/masquer le contenu d'une table
     function toggleTableContent(tableId) {
@@ -925,7 +945,7 @@
 
     // Fonction pour mettre à jour la quantité d'un objet
     function updateItemQuantity(itemId, operation) {
-        fetch(`/update_item_quantity/${itemId}/${operation}`, { method: "POST" })
+        fetch(`./update_item_quantity/${itemId}/${operation}`, { method: "POST" })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -933,6 +953,348 @@
                 document.getElementById(`quantity-${itemId}`).innerText = data.new_quantity;
             } else {
                 console.error("Erreur lors de la mise à jour de la quantité.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer une question du destin
+    function deleteFate(questionId) {
+        fetch(`./delete_fate/${questionId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de la question du destin.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer un objectif
+    function deleteObjective(objectiveId) {
+        fetch(`./delete_objective/${objectiveId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de l'objectif.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer un PNJ
+    function deleteNpc(npcId) {
+        fetch(`./delete_npc/${npcId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression du PNJ.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer une scène
+    function deleteScene(sceneId) {
+        fetch(`./delete_scene/${sceneId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de la scène.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer une table personnalisée
+    function deleteCustomTable(tableId) {
+        fetch(`./delete_custom_table/${tableId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de la table personnalisée.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer une entrée de journal
+    function deleteJournalEntry(entryId) {
+        fetch(`./delete_journal_entry/${entryId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de l'entrée de journal.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer un inventaire
+    function deleteInventory(inventoryId) {
+        fetch(`./delete_inventory/${inventoryId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de l'inventaire.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer un élément d'inventaire
+    function deleteInventoryItem(itemId) {
+        fetch(`./delete_inventory_item/${itemId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de l'élément d'inventaire.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer un personnage
+    function deletePlayer(playerId) {
+        fetch(`./delete_player/${playerId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression du personnage.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour supprimer un attribut de personnage
+    function deletePlayerAttribute(attributeId) {
+        fetch(`./delete_player_attribute/${attributeId}`, { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la suppression de l'attribut du personnage.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour poser une question à l'Oracle sans redirection
+    function askFate() {
+        const form = document.getElementById("askFateForm");
+        const formData = new FormData(form);
+
+        fetch("./ask_fate", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de la soumission de la question.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter un objectif sans redirection
+    function addObjective() {
+        const form = document.getElementById("addObjectiveForm");
+        const formData = new FormData(form);
+
+        fetch("./add_objective", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de l'objectif.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter un PNJ sans redirection
+    function addNpc() {
+        const form = document.getElementById("addNpcForm");
+        const formData = new FormData(form);
+
+        fetch("./add_npc", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout du PNJ.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter une scène sans redirection
+    function addScene() {
+        const form = document.getElementById("addSceneForm");
+        const formData = new FormData(form);
+
+        fetch("./add_scene", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de la scène.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter une entrée de journal sans redirection
+    function addJournalEntry() {
+        const form = document.getElementById("addJournalEntryForm");
+        const formData = new FormData(form);
+
+        fetch("./add_journal_entry", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de l'entrée de journal.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter un inventaire sans redirection
+    function addInventory() {
+        const form = document.getElementById("addInventoryForm");
+        const formData = new FormData(form);
+
+        fetch("./add_inventory", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de l'inventaire.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+
+
+    // Fonction pour ajouter un élément d'inventaire sans redirection
+    function addInventoryItem(inventoryId) {
+        const form = document.getElementById(`addInventoryItemForm-${inventoryId}`);
+        const formData = new FormData(form);
+
+        fetch(`./add_inventory_item/${inventoryId}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de l'élément d'inventaire.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter un personnage sans redirection
+    function addPlayer() {
+        const form = document.getElementById("addPlayerForm");
+        const formData = new FormData(form);
+
+        fetch("./add_player", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout du personnage.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour ajouter un attribut de personnage sans redirection
+    function addPlayerAttribute(playerId) {
+        const form = document.getElementById(`addPlayerAttributeForm-${playerId}`);
+        const formData = new FormData(form);
+
+        fetch(`./add_player_attribute/${playerId}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de l'attribut du personnage.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    // Fonction pour mettre à jour la clé OpenAI sans redirection
+    function updateOpenAIKey() {
+        const form = document.getElementById("updateOpenAIKeyForm");
+        const formData = new FormData(form);
+
+        fetch("./update_openai_key", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Clé API OpenAI mise à jour avec succès.");
+            } else {
+                console.error("Erreur lors de la mise à jour de la clé API OpenAI.");
             }
         })
         .catch(error => console.error("Erreur réseau :", error));
@@ -1003,7 +1365,7 @@
 
     // Tirage d'un PNJ aléatoire
     document.getElementById("randomNpcBtn")?.addEventListener("click", function(){
-        fetch("/random_npc")
+        fetch("./random_npc", { method: "POST" })
         .then(response => response.json())
         .then(data => {
             if(data.error) {
@@ -1016,7 +1378,7 @@
 
     // Lanceur de d100
     document.getElementById("rollD100Btn")?.addEventListener("click", function(){
-        fetch("/roll_d100")
+        fetch("./roll_d100", { method: "POST" })
         .then(response => response.json())
         .then(data => {
             document.getElementById("d100Result").innerText = "Résultat du d100 : " + data.roll;
@@ -1025,7 +1387,7 @@
 
     // Chaos Roll pour la scène suivante
     document.getElementById("sceneChaosRollBtn")?.addEventListener("click", function(){
-        fetch("/scene_chaos_roll")
+        fetch("./scene_chaos_roll", { method: "POST" })
         .then(response => response.json())
         .then(data => {
             document.getElementById("sceneChaosRollResult").innerText = "Jet : " + data.roll + " → Scène " + data.status;
@@ -1040,7 +1402,7 @@
     // Tirage dans les tables aléatoires
     function rollTable(tableName) {
         console.log(tableName);
-    fetch("/roll_table?table=" + tableName)
+    fetch("./roll_table?table=" + tableName, { method: "POST" })
     .then(response => response.json())
     .then(data => {
         // Construire l'ID de l'élément de résultat à partir de tableName
@@ -1098,7 +1460,7 @@
     }
 
     function updateAttribute(attributeId, operation) {
-        fetch(`/update_attribute/${attributeId}/${operation}`, { method: "POST" })
+        fetch(`./update_attribute/${attributeId}/${operation}`, { method: "POST" })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -1152,7 +1514,7 @@
 
     // Fonction pour mettre à jour le facteur de chaos via AJAX
     function updateChaos(adjustment) {
-        fetch("/update_chaos", {
+        fetch("./update_chaos", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -1220,7 +1582,7 @@
 
     // Fonction qui effectue un lancer de dé
     function rollDice(faces) {
-        fetch("/roll_dice/" + faces)
+        fetch("./roll_dice/" + faces, { method: "POST" })
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -1237,7 +1599,7 @@
 
     // Fonction pour charger l'historique des lancers depuis SQL
     function loadDiceHistory() {
-        fetch("/dice_history")
+        fetch("./dice_history", { method: "POST" })
         .then(response => response.json())
         .then(data => {
             const historyList = document.getElementById("rollHistory");
@@ -1252,6 +1614,48 @@
         .catch(error => console.error("Erreur lors du chargement de l'historique :", error));
     }
 
+    // Fonction pour ajouter une table personnalisée sans redirection
+    function addCustomTable() {
+        const form = document.getElementById("addCustomTableForm");
+        const formData = new FormData(form);
+
+        fetch("./add_custom_table", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error("Erreur lors de l'ajout de la table personnalisée.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
+
+    function editPlayerDescription(playerId) {
+        const textarea = document.getElementById(`desc-textarea-${playerId}`);
+        const description = textarea.value.trim();
+
+        const formData = new FormData();
+        formData.append("description", description);
+
+        fetch(`./edit_player_description/${playerId}`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`desc-view-${playerId}`).innerHTML = description.replace(/\n/g, '<br>');
+                toggleDescEdit(playerId);
+            } else {
+                console.error("Erreur lors de la mise à jour de la description du personnage.");
+            }
+        })
+        .catch(error => console.error("Erreur réseau :", error));
+    }
     // Charger l'historique au chargement de la page
     document.addEventListener("DOMContentLoaded", loadDiceHistory);
 
@@ -1286,7 +1690,7 @@
             document.getElementById("recordingStatus").innerText = "Analyse en cours...";
             document.getElementById("startRecording").disabled = true; // Disable button
 
-            fetch("/transcribe_audio", {
+            fetch("./transcribe_audio", {
                 method: "POST",
                 body: formData
             })
@@ -1319,7 +1723,7 @@
         document.getElementById("recordingStatus").innerText = "Génération du résumé en cours...";
         document.getElementById("formatJournal").disabled = true; // Disable button
 
-        fetch("/reformat_journal", {
+        fetch("./reformat_journal", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

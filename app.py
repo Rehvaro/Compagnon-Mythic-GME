@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import json
 from datetime import datetime
@@ -13,6 +15,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'cle_secrete_mythic'
 
 db = SQLAlchemy(app)
+auth = HTTPBasicAuth()
+
+# Utilisateurs pour l'authentification
+users = {
+    "admin": generate_password_hash("motdepasse")
+}
+
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and check_password_hash(users.get(username), password):
+        return username
 
 # Modèles de base de données
 class GameState(db.Model):
@@ -145,6 +158,7 @@ def fate_check(odds, chaos_factor):
     }
 
 @app.route("/")
+@auth.login_required
 def index():
     game_state = GameState.query.first()
     if not game_state:
@@ -191,6 +205,7 @@ def index():
 
 
 @app.route("/ask_fate", methods=["POST"])
+@auth.login_required
 def ask_fate():
     question = request.form.get("question")
     odds = request.form.get("odds")
@@ -211,47 +226,53 @@ def ask_fate():
     )
     db.session.add(new_question)
     db.session.commit()
-    return redirect(url_for("index") + "#fate")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_fate/<int:question_id>")
+@app.route("/delete_fate/<int:question_id>", methods=["POST"])
+@auth.login_required
 def delete_fate(question_id):
     fq = FateQuestion.query.get_or_404(question_id)
     db.session.delete(fq)
     db.session.commit()
-    return redirect(url_for("index") + "#fate")
+    return jsonify({"success": True}), 200
 
 @app.route("/add_objective", methods=["POST"])
+@auth.login_required
 def add_objective():
     description = request.form.get("description")
     new_objective = Objective(description=description)
     db.session.add(new_objective)
     db.session.commit()
-    return redirect(url_for("index") + "#objectives")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_objective/<int:objective_id>")
+@app.route("/delete_objective/<int:objective_id>", methods=["POST"])
+@auth.login_required
 def delete_objective(objective_id):
     obj = Objective.query.get_or_404(objective_id)
     db.session.delete(obj)
     db.session.commit()
-    return redirect(url_for("index") + "#objectives")
+    return jsonify({"success": True}), 200
 
 @app.route("/add_npc", methods=["POST"])
+@auth.login_required
 def add_npc():
     name = request.form.get("name")
     description = request.form.get("description")
     new_npc = NPC(name=name, description=description)
     db.session.add(new_npc)
     db.session.commit()
-    return redirect(url_for("index") + "#npcs")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_npc/<int:npc_id>")
+@app.route("/delete_npc/<int:npc_id>", methods=["POST"])
+@auth.login_required
 def delete_npc(npc_id):
     npc = NPC.query.get_or_404(npc_id)
     db.session.delete(npc)
     db.session.commit()
-    return redirect(url_for("index") + "#npcs")
+    return jsonify({"success": True}), 200
 
-@app.route("/random_npc")
+@app.route("/random_npc", methods=["POST"])
+@auth.login_required
 def random_npc():
     npcs = NPC.query.all()
     if npcs:
@@ -261,6 +282,7 @@ def random_npc():
         return jsonify({"error": "Aucun PNJ enregistré."})
 
 @app.route("/add_scene", methods=["POST"])
+@auth.login_required
 def add_scene():
     title = request.form.get("title")
     description = request.form.get("description")
@@ -268,25 +290,28 @@ def add_scene():
     new_scene = Scene(title=title, description=description, status=status)
     db.session.add(new_scene)
     db.session.commit()
-    return redirect(url_for("index") + "#scenes")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_scene/<int:scene_id>")
+@app.route("/delete_scene/<int:scene_id>", methods=["POST"])
+@auth.login_required
 def delete_scene(scene_id):
     scene = Scene.query.get_or_404(scene_id)
     db.session.delete(scene)
     db.session.commit()
-    return redirect(url_for("index") + "#scenes")
+    return jsonify({"success": True}), 200
 
 @app.route("/adjust_chaos", methods=["POST"])
+@auth.login_required
 def adjust_chaos():
     adjustment = int(request.form.get("adjustment"))
     game_state = GameState.query.first()
     game_state.chaos_factor = max(1, min(9, game_state.chaos_factor + adjustment))
     db.session.commit()
-    return redirect(url_for("index") + "#fate")
+    return jsonify({"success": True}), 200
 
 # Endpoint pour le Chaos Roll des scènes sur d10
-@app.route("/scene_chaos_roll")
+@app.route("/scene_chaos_roll", methods=["POST"])
+@auth.login_required
 def scene_chaos_roll():
     game_state = GameState.query.first()
     cf = game_state.chaos_factor
@@ -305,13 +330,15 @@ def scene_chaos_roll():
     return jsonify({"roll": roll, "status": status})
 
 # Lanceur de d100
-@app.route("/roll_d100")
+@app.route("/roll_d100", methods=["POST"])
+@auth.login_required
 def roll_d100():
     roll = random.randint(1, 100)
     return jsonify({"roll": roll})
 
-@app.route("/journal", defaults={'page': 1})
-@app.route("/journal/page/<int:page>")
+@app.route("/journal", defaults={'page': 1}, methods=["POST"])
+@app.route("/journal/page/<int:page>", methods=["POST"])
+@auth.login_required
 def journal(page):
     per_page = 5  # Nombre d'entrées par page
     journal_entries = JournalEntry.query.order_by(JournalEntry.date.desc()).paginate(page=page, per_page=per_page, error_out=False)
@@ -321,22 +348,25 @@ def journal(page):
     return render_template("index.html", journal_entries=journal_entries, current_page=page)
 
 @app.route("/add_journal_entry", methods=["POST"])
+@auth.login_required
 def add_journal_entry():
     content = request.form.get("content").strip()
     if content:
         new_entry = JournalEntry(content=content)
         db.session.add(new_entry)
         db.session.commit()
-    return redirect(url_for("index") + "#journal")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_journal_entry/<int:entry_id>")
+@app.route("/delete_journal_entry/<int:entry_id>", methods=["POST"])
+@auth.login_required
 def delete_journal_entry(entry_id):
     entry = JournalEntry.query.get_or_404(entry_id)
     db.session.delete(entry)
     db.session.commit()
-    return redirect(url_for("index") + "#journal")
+    return jsonify({"success": True}), 200
 
-@app.route("/export_journal")
+@app.route("/export_journal", methods=["POST"])
+@auth.login_required
 def export_journal():
     entries = JournalEntry.query.order_by(JournalEntry.date.asc()).all()
     markdown_content = "# Journal\n\n"
@@ -346,6 +376,7 @@ def export_journal():
     return Response(markdown_content, mimetype="text/markdown", headers={"Content-Disposition": "attachment;filename=journal.md"})
 
 @app.route("/add_inventory", methods=["POST"])
+@auth.login_required
 def add_inventory():
     title = request.form.get("title").strip()
     if title:
@@ -353,16 +384,18 @@ def add_inventory():
         db.session.add(new_inventory)
         print(new_inventory)
         db.session.commit()
-    return redirect(url_for("index") + "#inventories")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_inventory/<int:inventory_id>")
+@app.route("/delete_inventory/<int:inventory_id>", methods=["POST"])
+@auth.login_required
 def delete_inventory(inventory_id):
     inventory = Inventory.query.get_or_404(inventory_id)
     db.session.delete(inventory)
     db.session.commit()
-    return redirect(url_for("index") + "#inventories")
+    return jsonify({"success": True}), 200
 
 @app.route("/add_inventory_item/<int:inventory_id>", methods=["POST"])
+@auth.login_required
 def add_inventory_item(inventory_id):
     name = request.form.get("name")
     description = request.form.get("description")
@@ -376,16 +409,18 @@ def add_inventory_item(inventory_id):
     db.session.add(new_item)
     db.session.commit()
     flash("Objet ajouté avec succès à l'inventaire.", "success")
-    return redirect(url_for("index"))
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_inventory_item/<int:item_id>")
+@app.route("/delete_inventory_item/<int:item_id>", methods=["POST"])
+@auth.login_required
 def delete_inventory_item(item_id):
     item = InventoryItem.query.get_or_404(item_id)
     db.session.delete(item)
     db.session.commit()
-    return redirect(url_for("index") + "#inventories")
+    return jsonify({"success": True}), 200
 
 @app.route("/update_attribute/<int:attribute_id>/<string:operation>", methods=["POST"])
+@auth.login_required
 def update_attribute(attribute_id, operation):
     attr = PlayerAttribute.query.get_or_404(attribute_id)
     
@@ -406,6 +441,7 @@ def update_attribute(attribute_id, operation):
     return jsonify({"success": False}), 400  # Erreur si l'attribut n'est pas numérique
 
 @app.route("/update_item_quantity/<int:item_id>/<string:operation>", methods=["POST"])
+@auth.login_required
 def update_item_quantity(item_id, operation):
     item = InventoryItem.query.get_or_404(item_id)
     if operation == "increase":
@@ -416,6 +452,7 @@ def update_item_quantity(item_id, operation):
     return jsonify({"success": True, "new_quantity": item.quantity, "inventory_id": item.inventory_id})
 
 @app.route("/update_openai_key", methods=["POST"])
+@auth.login_required
 def update_openai_key():
     api_key = request.form.get("api_key")
     config = OpenAIConfig.query.first()
@@ -429,6 +466,7 @@ def update_openai_key():
     return redirect(url_for("index") + "#options")
 
 @app.route("/transcribe_audio", methods=["POST"])
+@auth.login_required
 def transcribe_audio():
     config = OpenAIConfig.query.first()
     if not config or not config.api_key:
@@ -459,6 +497,7 @@ def transcribe_audio():
     return jsonify({"transcription": transcription_text})
 
 @app.route("/reformat_journal", methods=["POST"])
+@auth.login_required
 def reformat_journal():
     text = request.form.get("journal_text")
     config = OpenAIConfig.query.first()
@@ -777,7 +816,8 @@ DESCRIPTEUR_MORT_VIVANT = {
     16: "Miasmatique", 17: "Putréfié", 18: "Silencieux", 19: "Squelettique", 20: "Spectral"}
 
 
-@app.route("/roll_table", methods=["GET"])
+@app.route("/roll_table", methods=["POST"])
+@auth.login_required
 def roll_table():
     table = request.args.get("table")
     if table == "scene_adjustment":
@@ -943,6 +983,7 @@ def roll_table():
         return jsonify({"error": "Table non définie"})
 
 @app.route("/add_custom_table", methods=["POST"])
+@auth.login_required
 def add_custom_table():
     name = request.form.get("customTableName").strip()
     values = request.form.get("customTableValues").strip()
@@ -950,25 +991,28 @@ def add_custom_table():
         new_table = CustomTable(name=name, values=values)
         db.session.add(new_table)
         db.session.commit()
-    return redirect(url_for("index") + "#tables")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_custom_table/<int:table_id>")
+@app.route("/delete_custom_table/<int:table_id>", methods=["POST"])
+@auth.login_required
 def delete_custom_table(table_id):
     table = CustomTable.query.get_or_404(table_id)
     db.session.delete(table)
     db.session.commit()
-    return redirect(url_for("index") + "#tables")
+    return jsonify({"success": True}), 200
 
 @app.route("/edit_custom_table/<int:table_id>", methods=["POST"])
+@auth.login_required
 def edit_custom_table(table_id):
     print('edit !')
     table = CustomTable.query.get_or_404(table_id)
     table.name = request.form.get("customTableNameEdit").strip()
     table.values = request.form.get("customTableValuesEdit").strip()
     db.session.commit()
-    return redirect(url_for("index") + "#tables")
+    return jsonify({"success": True}), 200
 
-@app.route("/get_custom_table")
+@app.route("/get_custom_table", methods=["POST"])
+@auth.login_required
 def get_custom_table():
     table_id = request.args.get("table_id")
     table = CustomTable.query.get(table_id)
@@ -978,6 +1022,7 @@ def get_custom_table():
         return jsonify({"error": "Table non trouvée"})
 
 @app.route("/add_player", methods=["POST"])
+@auth.login_required
 def add_player():
     name = request.form.get("name").strip()
     description = request.form.get("description").strip()
@@ -985,16 +1030,19 @@ def add_player():
         new_player = PlayerCharacter(name=name, description=description)
         db.session.add(new_player)
         db.session.commit()
-    return redirect(url_for("index") + "#players")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_player/<int:player_id>")
+@app.route("/delete_player/<int:player_id>", methods=["POST"])
+@auth.login_required
 def delete_player(player_id):
+    print('elete')
     player = PlayerCharacter.query.get_or_404(player_id)
     db.session.delete(player)
     db.session.commit()
-    return redirect(url_for("index") + "#players")
+    return jsonify({"success": True}), 200
 
 @app.route("/add_player_attribute/<int:player_id>", methods=["POST"])
+@auth.login_required
 def add_player_attribute(player_id):
     attr_name = request.form.get("attribute_name").strip()
     attr_value = request.form.get("attribute_value").strip()
@@ -1016,23 +1064,26 @@ def add_player_attribute(player_id):
     )
     db.session.add(new_attr)
     db.session.commit()
-    return redirect(url_for("index") + "#players")
+    return jsonify({"success": True}), 200
 
-@app.route("/delete_player_attribute/<int:attribute_id>")
+@app.route("/delete_player_attribute/<int:attribute_id>", methods=["POST"])
+@auth.login_required
 def delete_player_attribute(attribute_id):
     attribute = PlayerAttribute.query.get_or_404(attribute_id)
     db.session.delete(attribute)
     db.session.commit()
-    return redirect(url_for("index") + "#players")
+    return jsonify({"success": True}), 200
 
 @app.route("/edit_player_description/<int:player_id>", methods=["POST"])
+@auth.login_required
 def edit_player_description(player_id):
     player = PlayerCharacter.query.get_or_404(player_id)
     player.description = request.form.get("description").strip()
     db.session.commit()
-    return redirect(url_for("index") + "#players")
+    return jsonify({"success": True}), 200
 
 @app.route("/update_chaos", methods=["POST"])
+@auth.login_required
 def update_chaos():
     adjustment = int(request.form.get("adjustment"))
     game_state = GameState.query.first()
@@ -1040,7 +1091,8 @@ def update_chaos():
     db.session.commit()
     return jsonify({"new_chaos": game_state.chaos_factor})
 
-@app.route("/roll_dice/<int:faces>")
+@app.route("/roll_dice/<int:faces>", methods=["POST"])
+@auth.login_required
 def roll_dice(faces):
     if faces < 1:
         return jsonify({"error": "Nombre de faces invalide"}), 400
@@ -1051,7 +1103,8 @@ def roll_dice(faces):
     db.session.commit()
     return jsonify({"roll": roll, "faces": faces})
 
-@app.route("/dice_history")
+@app.route("/dice_history", methods=["POST"])
+@auth.login_required
 def dice_history():
     history = DiceRollHistory.query.order_by(DiceRollHistory.date.desc()).limit(10).all()
     # On prépare une liste de dictionnaires pour le JSON
@@ -1063,4 +1116,4 @@ def dice_history():
     return jsonify(history_list)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, port=5345)
