@@ -186,6 +186,7 @@ def index():
     players = PlayerCharacter.query.all()
 
     openai_config = OpenAIConfig.query.first()
+    openai_key_display = '*******' if openai_config and openai_config.api_key else ''
 
     return render_template("index.html", 
                        chaos_factor=game_state.chaos_factor, 
@@ -201,7 +202,7 @@ def index():
                        inventories=inventories,
                        players=players,
                        custom_tables_json=json.dumps([{ "id": t.id, "name": t.name, "values": t.values } for t in custom_tables]),
-                       openai_key=openai_config.api_key)
+                       openai_key=openai_key_display)
 
 
 @app.route("/ask_fate", methods=["POST"])
@@ -454,7 +455,12 @@ def update_item_quantity(item_id, operation):
 @app.route("/update_openai_key", methods=["POST"])
 @auth.login_required
 def update_openai_key():
+    
     api_key = request.form.get("api_key")
+    if not api_key.startswith("sk-"):
+        flash("La clé OpenAI doit commencer par 'sk-'.", "danger")
+        return jsonify({"success": False}), 200
+    
     config = OpenAIConfig.query.first()
     if config:
         config.api_key = api_key
@@ -463,7 +469,7 @@ def update_openai_key():
         db.session.add(config)
     db.session.commit()
     flash("Clé OpenAI mise à jour avec succès.", "success")
-    return redirect(url_for("index") + "#options")
+    return jsonify({"success": True}), 200
 
 @app.route("/transcribe_audio", methods=["POST"])
 @auth.login_required
